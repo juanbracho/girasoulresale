@@ -38,9 +38,12 @@ Girasoul Business Dashboard is a local web application built to streamline opera
 
 ### **Prerequisites**
 - Python 3.8+ (Python 3.13+ recommended)
+- Windows 10/11 (developed and tested on Windows 11)
 - Git (optional, for cloning)
 
 ### **Installation**
+
+> **Note**: This application was developed and tested on Windows 11. While it should work on other platforms, the instructions below are Windows-focused.
 
 1. **Clone or download the repository**
    ```bash
@@ -48,9 +51,11 @@ Girasoul Business Dashboard is a local web application built to streamline opera
    cd girasoul
    ```
 
-2. **Install Python dependencies**
+2. **First-time setup: Install Python dependencies**
+   
+   **Important**: You must run this command in Command Prompt or PowerShell the first time:
    ```bash
-   # On Windows (recommended)
+   # On Windows (required first-time setup)
    py -m pip install --upgrade Flask Flask-SQLAlchemy SQLAlchemy
 
    # On macOS/Linux
@@ -69,6 +74,29 @@ Girasoul Business Dashboard is a local web application built to streamline opera
 4. **Access the dashboard**
    - Open your web browser
    - Navigate to: `http://127.0.0.1:5000`
+
+### **Easy Startup (Windows) - Recommended**
+
+For daily use without opening terminals or code editors, create a startup batch file:
+
+1. **Create a new file** called `start_girasoul.bat` in your project folder
+2. **Add this content** to the file:
+   ```batch
+   @echo off
+   echo Starting Girasoul Business Dashboard...
+   echo.
+   py app.py
+   pause
+   ```
+3. **Save the file** in the same directory as `app.py`
+4. **Double-click** `start_girasoul.bat` to start the application
+5. **Your browser** will automatically open to the dashboard
+
+**Benefits of the .bat file:**
+- No need to open Command Prompt or code editors
+- One-click startup from desktop or file explorer
+- Automatically keeps the window open if there are any errors
+- Perfect for daily business use
 
 ### **First-Time Setup**
 The application will automatically:
@@ -253,9 +281,17 @@ rm data/business.db
 For development with detailed error messages:
 ```bash
 export FLASK_DEBUG=True  # Linux/macOS
-set FLASK_DEBUG=True     # Windows
+set FLASK_DEBUG=True     # Windows Command Prompt
 py app.py
 ```
+
+### **Creating Desktop Shortcut (Windows)**
+For even easier access:
+1. Right-click on `start_girasoul.bat`
+2. Select "Create shortcut"
+3. Move the shortcut to your Desktop
+4. Rename it to "Girasoul Dashboard"
+5. Now you can start your business dashboard directly from your desktop!
 
 ## 🗂️ **Data Import**
 
