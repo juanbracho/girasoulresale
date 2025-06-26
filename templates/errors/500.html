@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Error - Girasoul Business</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div class="container flex-grow-1 d-flex align-items-center justify-content-center">
+        <div class="text-center">
+            <div class="mb-4">
+                <i class="fas fa-exclamation-triangle fa-5x text-warning"></i>
+            </div>
+            <h1 class="display-4 fw-bold text-danger">500</h1>
+            <h2 class="mb-3">Internal Server Error</h2>
+            <p class="lead text-muted mb-4">
+                Something went wrong on our end. We're working to fix it!
+            </p>
+            <div class="alert alert-info">
+                <strong>What you can do:</strong>
+                <ul class="list-unstyled mb-0 mt-2">
+                    <li>• Try refreshing the page</li>
+                    <li>• Go back to the dashboard</li>
+                    <li>• Check if your database is accessible</li>
+                </ul>
+            </div>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-primary btn-lg">
+                    🏠 Go to Dashboard
+                </a>
+                <button onclick="window.location.reload()" class="btn btn-outline-secondary btn-lg">
+                    🔄 Refresh Page
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="py-3 bg-light mt-auto">
+        <div class="container text-center">
+            <small class="text-muted">Girasoul Business Dashboard &copy; 2025</small>
+        </div>
+    </footer>
+</body>
+</html>

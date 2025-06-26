@@ -1,0 +1,254 @@
+<!-- Dynamic Inventory Modal with Add New Functionality -->
+<div class="modal fade" id="inventoryModal" tabindex="-1" aria-labelledby="inventoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inventoryModalLabel">Add New Inventory Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="inventoryForm" novalidate>
+                    <input type="hidden" id="inventorySku" value="">
+                    <input type="hidden" id="inventoryEditMode" value="false">
+                    
+                    <!-- Row 1: Name and Brand -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="inventoryName" class="form-label">
+                                Item Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="inventoryName" required 
+                                   placeholder="e.g., Vintage Denim Jacket" maxlength="100">
+                            <div class="invalid-feedback">Item name is required</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inventoryBrand" class="form-label">
+                                Brand <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="inventoryBrand" required 
+                                   placeholder="e.g., Nike, Zara, H&M" maxlength="100">
+                            <div class="invalid-feedback">Brand is required</div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Item Type and Category -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="inventoryItemType" class="form-label">
+                                Item Type <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="inventoryItemType" required 
+                                   placeholder="e.g., Blouse, Jeans, Dress" maxlength="100">
+                            <div class="invalid-feedback">Item type is required</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inventoryCategory" class="form-label">
+                                Category <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="inventoryCategory" required>
+                                <option value="">Loading categories...</option>
+                            </select>
+                            <div class="invalid-feedback">Category is required</div>
+                            <div class="mt-1">
+                                <a href="#" class="text-primary text-decoration-none small" id="addNewCategoryLink">
+                                    <i class="fas fa-plus"></i> Add new category
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Row 3: Size and Condition -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="inventorySize" class="form-label">
+                                Size <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="inventorySize" required 
+                                   placeholder="e.g., XS, S, M, L, XL, 6, 8, 10" maxlength="20">
+                            <div class="invalid-feedback">Size is required</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inventoryCondition" class="form-label">
+                                Condition <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="inventoryCondition" required>
+                                <option value="">Loading conditions...</option>
+                            </select>
+                            <div class="invalid-feedback">Condition is required</div>
+                            <div class="mt-1">
+                                <a href="#" class="text-primary text-decoration-none small" id="addNewConditionLink">
+                                    <i class="fas fa-plus"></i> Add new condition
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Row 4: Cost and Selling Price -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="inventoryCostPerUnit" class="form-label">
+                                Cost of Item <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="inventoryCostPerUnit" 
+                                       required min="0.01" step="0.01" placeholder="0.00">
+                                <div class="invalid-feedback">Cost must be at least $0.01</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inventorySellingPrice" class="form-label">
+                                Selling Price <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="inventorySellingPrice" 
+                                       required min="0.01" step="0.01" placeholder="0.00">
+                                <div class="invalid-feedback">Selling price must be at least $0.01</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 5: Collection/Drop and Status -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="inventoryCollectionDrop" class="form-label">
+                                Collection/Drop
+                            </label>
+                            <input type="text" class="form-control" id="inventoryCollectionDrop" 
+                                   placeholder="e.g., Summer 2025, Holiday Collection" maxlength="100">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inventoryListingStatus" class="form-label">Status</label>
+                            <select class="form-select" id="inventoryListingStatus">
+                                <option value="inventory">Inventory</option>
+                                <option value="listed">Listed</option>
+                                <option value="kept">Kept</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Row 6: Location -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="inventoryLocation" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="inventoryLocation" 
+                                   placeholder="e.g., Main Inventory, Storage Room A" maxlength="100">
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label for="inventoryDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="inventoryDescription" rows="3" 
+                                  placeholder="Additional details about the item..." maxlength="500"></textarea>
+                        <div class="form-text">
+                            <span id="descriptionCharCount">0</span>/500 characters
+                        </div>
+                    </div>
+                    
+                    <!-- Profit Preview -->
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title mb-2">Profit Preview</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <small class="text-muted">Potential Profit:</small><br>
+                                    <span id="profitAmount" class="fw-bold text-success">$0.00</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <small class="text-muted">Margin:</small><br>
+                                    <span id="profitMargin" class="fw-bold text-info">0%</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <small class="text-muted">Cost with Tax (approx):</small><br>
+                                    <span id="costWithTax" class="fw-bold text-warning">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="saveInventoryBtn" form="inventoryForm">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    Save Item
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add New Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addCategoryForm" novalidate>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="newCategoryName" class="form-label">
+                            Category Name <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="newCategoryName" required 
+                               placeholder="e.g., Swimwear, Vintage, Designer" maxlength="50">
+                        <div class="invalid-feedback">Category name is required</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newCategoryDescription" class="form-label">Description (Optional)</label>
+                        <textarea class="form-control" id="newCategoryDescription" rows="2" 
+                                  placeholder="Brief description of this category..." maxlength="200"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveCategoryBtn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        Add Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add New Condition Modal -->
+<div class="modal fade" id="addConditionModal" tabindex="-1" aria-labelledby="addConditionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addConditionModalLabel">Add New Condition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addConditionForm" novalidate>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="newConditionName" class="form-label">
+                            Condition Name <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="newConditionName" required 
+                               placeholder="e.g., EUC, Fair, Poor" maxlength="50">
+                        <div class="invalid-feedback">Condition name is required</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newConditionDescription" class="form-label">Description (Optional)</label>
+                        <textarea class="form-control" id="newConditionDescription" rows="2" 
+                                  placeholder="Brief description of this condition..." maxlength="200"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveConditionBtn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        Add Condition
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

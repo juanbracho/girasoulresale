@@ -1,0 +1,461 @@
+/* Financial Page Specific Styles */
+
+/* =============================================================================
+   FINANCIAL OVERVIEW CARDS
+   ============================================================================= */
+
+.financial-filters {
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+}
+
+.financial-filters .form-select {
+    min-width: 120px;
+}
+
+/* =============================================================================
+   CHART CONTAINERS
+   ============================================================================= */
+
+.chart-card {
+    border: none;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
+}
+
+.chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.chart-card .card-header {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+    border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
+}
+
+.chart-container {
+    height: 300px;
+    min-height: 300px;
+    width: 100%;
+    position: relative;
+}
+
+.chart-container .alert {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    margin: 0;
+}
+
+/* =============================================================================
+   TRANSACTIONS TABLE
+   ============================================================================= */
+
+.transactions-table {
+    background: white;
+    border-radius: var(--border-radius-large);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+}
+
+.transactions-table .table th {
+    background-color: var(--light-color);
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: var(--dark-color);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.transactions-table .table-hover tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+.transactions-table .badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+}
+
+.transactions-table .btn-group .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 4px;
+}
+
+/* =============================================================================
+   CATEGORY BREAKDOWN
+   ============================================================================= */
+
+.category-breakdown {
+    background: white;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-light);
+}
+
+.category-breakdown .table th {
+    background-color: var(--light-color);
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.category-breakdown .table td {
+    vertical-align: middle;
+    padding: 0.75rem;
+}
+
+.category-breakdown .fw-bold {
+    color: var(--dark-color);
+}
+
+/* =============================================================================
+   NO DATA MESSAGES
+   ============================================================================= */
+
+#noTransactionsMessage {
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#noTransactionsMessage .fas {
+    opacity: 0.6;
+    margin-bottom: 1rem;
+}
+
+#noTransactionsMessage h4 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* =============================================================================
+   LOADING STATES
+   ============================================================================= */
+
+.chart-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    color: var(--primary-color);
+}
+
+.chart-loading .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.table-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .financial-filters .d-flex {
+        flex-direction: column;
+        gap: 1rem !important;
+    }
+    
+    .financial-filters .form-select {
+        min-width: 100%;
+    }
+    
+    .chart-container {
+        height: 250px;
+        min-height: 250px;
+    }
+    
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 0.25rem;
+        width: 100%;
+    }
+    
+    .transactions-table .table {
+        font-size: 0.85rem;
+    }
+    
+    .transactions-table .table th,
+    .transactions-table .table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .category-breakdown .table {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .display-6 {
+        font-size: 1.75rem;
+    }
+    
+    .lead {
+        font-size: 1rem;
+    }
+    
+    .btn-group {
+        width: 100%;
+    }
+    
+    .metric-card {
+        margin-bottom: 1rem;
+    }
+    
+    .chart-container {
+        height: 200px;
+        min-height: 200px;
+    }
+    
+    #noTransactionsMessage {
+        min-height: 200px;
+        padding: 1rem;
+    }
+    
+    #noTransactionsMessage .fas {
+        font-size: 3rem !important;
+    }
+    
+    #noTransactionsMessage .d-flex {
+        flex-direction: column;
+        width: 100%;
+    }
+}
+
+/* =============================================================================
+   FINANCIAL SPECIFIC ANIMATIONS
+   ============================================================================= */
+
+.chart-card {
+    animation: slideInUp 0.6s ease-out;
+}
+
+.chart-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.transactions-table {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.category-breakdown {
+    animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* =============================================================================
+   TRANSACTION TYPE INDICATORS
+   ============================================================================= */
+
+.transaction-income {
+    border-left: 4px solid var(--success-color);
+}
+
+.transaction-expense {
+    border-left: 4px solid var(--danger-color);
+}
+
+/* =============================================================================
+   CHART RESPONSIVE BEHAVIOR
+   ============================================================================= */
+
+.plotly-graph-div {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* =============================================================================
+   FILTER STATES
+   ============================================================================= */
+
+.financial-filters .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.financial-filters .form-label {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+/* =============================================================================
+   PRINT STYLES
+   ============================================================================= */
+
+@media print {
+    .chart-card,
+    .transactions-table,
+    .category-breakdown {
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+        break-inside: avoid;
+    }
+    
+    .btn-group,
+    .financial-filters {
+        display: none !important;
+    }
+    
+    .chart-container {
+        height: 400px !important;
+    }
+}
+
+/* Add these styles to the end of financial.css */
+
+/* =============================================================================
+   PAGINATION STYLES
+   ============================================================================= */
+
+.pagination {
+    margin-bottom: 0;
+}
+
+.pagination .page-link {
+    color: var(--primary-color);
+    border-color: var(--border-color);
+    padding: 0.5rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+    color: #fff;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+    font-weight: 600;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: var(--text-muted);
+    background-color: #fff;
+    border-color: var(--border-color);
+    cursor: not-allowed;
+}
+
+.pagination .page-link i {
+    font-size: 0.875rem;
+}
+
+/* Pagination responsiveness */
+@media (max-width: 576px) {
+    .pagination {
+        justify-content: center !important;
+        flex-wrap: wrap;
+    }
+    
+    .pagination .page-item {
+        margin: 0.125rem;
+    }
+    
+    .pagination .page-link {
+        padding: 0.375rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Hide some page numbers on mobile */
+    .pagination .page-item:not(.active):not(:first-child):not(:last-child):not(:nth-child(2)):not(:nth-last-child(2)) {
+        display: none;
+    }
+}
+
+/* =============================================================================
+   TRANSACTION TABLE IMPROVEMENTS
+   ============================================================================= */
+
+.transactions-table .badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.transaction-income {
+    border-left: 3px solid var(--success-color);
+}
+
+.transaction-expense {
+    border-left: 3px solid var(--danger-color);
+}
+
+.transactions-table .btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.transactions-table .btn-group-sm .btn i {
+    font-size: 0.7rem;
+}
+
+/* Hover effects for transaction rows */
+.transactions-table tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+/* =============================================================================
+   ENHANCED RESPONSIVE BEHAVIOR
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .transactions-table .table-responsive {
+        border: none;
+    }
+    
+    .transactions-table .table {
+        font-size: 0.875rem;
+    }
+    
+    .transactions-table .btn-group {
+        flex-direction: column;
+    }
+    
+    .transactions-table .btn-group .btn {
+        margin-bottom: 0.25rem;
+        border-radius: 0.25rem !important;
+    }
+}

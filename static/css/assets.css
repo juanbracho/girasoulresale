@@ -1,0 +1,235 @@
+/* Business Assets Specific Styles */
+
+/* =============================================================================
+   ASSETS OVERVIEW STYLES
+   ============================================================================= */
+
+.assets-filters {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.assets-table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.assets-table .table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+}
+
+.assets-table .table-hover tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+.asset-details {
+    font-size: 0.95rem;
+}
+
+.asset-details .row {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 0.5rem 0;
+}
+
+.asset-details .row:last-child {
+    border-bottom: none;
+}
+
+/* =============================================================================
+   CATEGORY BADGES
+   ============================================================================= */
+
+.category-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+}
+
+.category-marketing { 
+    background-color: #e74c3c; 
+    color: white; 
+}
+
+.category-technology { 
+    background-color: #3498db; 
+    color: white; 
+}
+
+.category-furniture { 
+    background-color: #2ecc71; 
+    color: white; 
+}
+
+.category-other { 
+    background-color: #95a5a6; 
+    color: white; 
+}
+
+/* =============================================================================
+   ASSETS SUMMARY STYLES
+   ============================================================================= */
+
+.category-summary {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.category-title {
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.category-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-value {
+    font-weight: bold;
+    color: #28a745;
+    font-size: 1.1rem;
+}
+
+/* =============================================================================
+   MODAL STYLES
+   ============================================================================= */
+
+.business-modal .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px 15px 0 0;
+}
+
+.business-modal .modal-header .btn-close {
+    filter: invert(1);
+}
+
+.asset-dispose-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-left: 4px solid #ffc107;
+}
+
+/* =============================================================================
+   FORM STYLES
+   ============================================================================= */
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-control.is-valid, .form-select.is-valid {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-control.is-invalid, .form-select.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* =============================================================================
+   ACTION BUTTONS
+   ============================================================================= */
+
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    margin-right: 0.25rem;
+    border-radius: 4px;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+/* =============================================================================
+   STATUS INDICATORS
+   ============================================================================= */
+
+.table-secondary {
+    opacity: 0.7;
+}
+
+.table-secondary td {
+    color: #6c757d;
+}
+
+/* =============================================================================
+   NO ASSETS MESSAGE
+   ============================================================================= */
+
+#noAssetsMessage {
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#noAssetsMessage .fas {
+    margin-bottom: 1rem;
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .assets-filters .row > div {
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .btn-group .btn {
+        margin-right: 0;
+        margin-bottom: 0.25rem;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .category-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .assets-table .table {
+        font-size: 0.85rem;
+    }
+    
+    .assets-table .table th,
+    .assets-table .table td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+
+/* =============================================================================
+   UTILITIES
+   ============================================================================= */
+
+.business-assets-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.business-assets-shadow {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

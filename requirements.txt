@@ -1,0 +1,14 @@
+# Girasoul Business Dashboard - Python Dependencies
+# Updated for Python 3.13 compatibility
+
+# Core Flask Framework (Latest compatible versions)
+Flask==3.1.0
+Flask-SQLAlchemy==3.1.2
+
+# Database and Utilities (Python 3.13 compatible)
+SQLAlchemy==2.1.0
+Werkzeug==3.1.3
+
+# Note: pathlib2 and secrets are not needed for Python 3.13
+# pathlib is built into Python 3.4+
+# secrets is built into Python 3.6+

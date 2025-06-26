@@ -1,0 +1,382 @@
+<!-- Inventory Sell Modal Component -->
+<div class="modal fade" id="inventorySellModal" tabindex="-1" aria-labelledby="inventorySellModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="inventorySellModalLabel">
+                    <i class="fas fa-shopping-cart me-2"></i>Mark Item as Sold
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="inventorySellForm" novalidate>
+                    <input type="hidden" id="sellItemSku" value="">
+                    
+                    <!-- Item Summary Card -->
+                    <div class="card mb-4 border-success">
+                        <div class="card-header bg-light">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Item Details
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <strong>SKU:</strong> <span id="sellItemSkuDisplay" class="text-primary">-</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Item:</strong> <span id="sellItemName">-</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Brand:</strong> <span id="sellItemBrand">-</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Category:</strong> <span id="sellItemCategory" class="badge bg-secondary">-</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <strong>Size:</strong> <span id="sellItemSize">-</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Condition:</strong> <span id="sellItemCondition" class="badge bg-info">-</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Original Cost:</strong> <span id="sellItemCost" class="text-danger">$0.00</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Listed Price:</strong> <span id="sellItemListedPrice" class="text-success">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sale Information -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="sellFinalPrice" class="form-label">
+                                Final Selling Price <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="sellFinalPrice" 
+                                       required min="0" step="0.01" placeholder="0.00">
+                                <div class="invalid-feedback">Final selling price is required</div>
+                            </div>
+                            <small class="form-text text-muted">
+                                Enter $0.00 for giveaways or bundles
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sellDate" class="form-label">
+                                Sale Date <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control" id="sellDate" required>
+                            <div class="invalid-feedback">Sale date is required</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sale Platform/Notes -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="sellPlatform" class="form-label">
+                                Platform/Channel
+                            </label>
+                            <select class="form-select" id="sellPlatform">
+                                <option value="Other">Other</option>
+                                <option value="Online Store">Online Store</option>
+                                <option value="Instagram">Instagram</option>
+                                <option value="Facebook Marketplace">Facebook Marketplace</option>
+                                <option value="Poshmark">Poshmark</option>
+                                <option value="Mercari">Mercari</option>
+                                <option value="Depop">Depop</option>
+                                <option value="Vinted">Vinted</option>
+                                <option value="In-Person">In-Person</option>
+                                <option value="Pop-up Market">Pop-up Market</option>
+                                <option value="Giveaway">Giveaway</option>
+                                <option value="Bundle">Bundle</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sellNotes" class="form-label">
+                                Sale Notes
+                            </label>
+                            <input type="text" class="form-control" id="sellNotes" 
+                                   placeholder="Optional notes about the sale" maxlength="200">
+                        </div>
+                    </div>
+                    
+                    <!-- Profit Calculation Display -->
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-calculator me-2"></i>Profit Calculation
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <div class="h5 text-danger mb-1" id="profitCost">$0.00</div>
+                                        <small class="text-muted">Cost</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <div class="h5 text-success mb-1" id="profitSalePrice">$0.00</div>
+                                        <small class="text-muted">Sale Price</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <div class="h5 text-info mb-1" id="profitTaxPrice">$0.00</div>
+                                        <small class="text-muted">W/Tax Price</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <div class="h5 mb-1" id="profitAmount">$0.00</div>
+                                        <small class="text-muted">Net Profit</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Profit Margin -->
+                            <div class="mt-3 text-center">
+                                <div class="h6">
+                                    Profit Margin: <span id="profitMargin" class="badge bg-primary">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Zero Price Warning -->
+                    <div class="alert alert-warning d-none" id="zeroPriceWarning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Zero Price Sale:</strong> No income transaction will be created for this sale. 
+                        The item will be marked as sold but won't generate revenue records.
+                    </div>
+                    
+                    <!-- Transaction Preview -->
+                    <div class="card border-info mt-3" id="transactionPreview">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-receipt me-2"></i>Transaction Preview
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <strong>Type:</strong> <span class="badge bg-success">Income</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Category:</strong> Sales Revenue
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Sub-Category:</strong> <span id="transactionSubCategory">-</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <strong>Amount:</strong> <span id="transactionAmount" class="text-success">$0.00</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Date:</strong> <span id="transactionDate">-</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Description:</strong> <span id="transactionDescription">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info mt-2 mb-0" id="noTransactionNote" style="display: none;">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No income transaction will be created for $0.00 sales.
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-success" id="confirmSellBtn" onclick="confirmSellItem()">
+                    <i class="fas fa-check me-1"></i> 
+                    <span id="sellButtonText">Mark as Sold</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sell modal validation and calculation scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sellPriceInput = document.getElementById('sellFinalPrice');
+    const sellDateInput = document.getElementById('sellDate');
+    const sellPlatformSelect = document.getElementById('sellPlatform');
+    const sellNotesInput = document.getElementById('sellNotes');
+    
+    // Set default sale date to today
+    sellDateInput.value = new Date().toISOString().split('T')[0];
+    
+    // Update calculations when price changes
+    sellPriceInput.addEventListener('input', updateSellCalculations);
+    sellDateInput.addEventListener('change', updateTransactionPreview);
+    sellPlatformSelect.addEventListener('change', updateTransactionPreview);
+    
+    // Auto-set platform to "Giveaway" when price is $0
+    sellPriceInput.addEventListener('input', function() {
+        const price = parseFloat(this.value) || 0;
+        if (price === 0) {
+            sellPlatformSelect.value = 'Giveaway';
+        }
+    });
+    
+    function updateSellCalculations() {
+        const cost = parseFloat(document.getElementById('sellItemCost').textContent.replace(',', '')) || 0;
+        const salePrice = parseFloat(sellPriceInput.value) || 0;
+        const taxPrice = salePrice * 1.083;
+        const profit = salePrice - cost;
+        const profitMargin = salePrice > 0 ? (profit / salePrice) * 100 : 0;
+        
+        // Update profit display
+        document.getElementById('profitCost').textContent = `${cost.toFixed(2)}`;
+        document.getElementById('profitSalePrice').textContent = `${salePrice.toFixed(2)}`;
+        document.getElementById('profitTaxPrice').textContent = `${taxPrice.toFixed(2)}`;
+        document.getElementById('profitAmount').textContent = `${profit.toFixed(2)}`;
+        document.getElementById('profitMargin').textContent = `${profitMargin.toFixed(1)}%`;
+        
+        // Color code profit
+        const profitElement = document.getElementById('profitAmount');
+        const marginElement = document.getElementById('profitMargin');
+        
+        if (profit > 0) {
+            profitElement.classList.remove('text-danger');
+            profitElement.classList.add('text-success');
+            marginElement.classList.remove('bg-danger');
+            marginElement.classList.add('bg-success');
+        } else if (profit < 0) {
+            profitElement.classList.remove('text-success');
+            profitElement.classList.add('text-danger');
+            marginElement.classList.remove('bg-success');
+            marginElement.classList.add('bg-danger');
+        } else {
+            profitElement.classList.remove('text-success', 'text-danger');
+            marginElement.classList.remove('bg-success', 'bg-danger');
+            marginElement.classList.add('bg-secondary');
+        }
+        
+        // Show/hide zero price warning
+        const zeroWarning = document.getElementById('zeroPriceWarning');
+        if (salePrice === 0) {
+            zeroWarning.classList.remove('d-none');
+        } else {
+            zeroWarning.classList.add('d-none');
+        }
+        
+        updateTransactionPreview();
+    }
+
+    function updateTransactionPreview() {
+        const salePrice = parseFloat(sellPriceInput.value) || 0;
+        const saleDate = sellDateInput.value;
+        const platform = sellPlatformSelect.value;
+        const itemName = document.getElementById('sellItemName').textContent;
+        const itemSku = document.getElementById('sellItemSkuDisplay').textContent;
+        const category = document.getElementById('sellItemCategory').textContent;
+        
+        // Update transaction preview
+        document.getElementById('transactionSubCategory').textContent = category;
+        document.getElementById('transactionAmount').textContent = `${salePrice.toFixed(2)}`;
+        document.getElementById('transactionDate').textContent = new Date(saleDate).toLocaleDateString();
+        document.getElementById('transactionDescription').textContent = `Sale: ${itemName}`;
+        
+        // Show/hide no transaction note
+        const noTransactionNote = document.getElementById('noTransactionNote');
+        if (salePrice === 0) {
+            noTransactionNote.style.display = 'block';
+        } else {
+            noTransactionNote.style.display = 'none';
+        }
+        
+        // Update button text based on price
+        const sellButtonText = document.getElementById('sellButtonText');
+        if (salePrice === 0) {
+            sellButtonText.textContent = 'Mark as Sold (No Revenue)';
+        } else {
+            sellButtonText.textContent = `Mark as Sold (${salePrice.toFixed(2)})`;
+        }
+    }
+    
+    // Initialize calculations
+    updateSellCalculations();
+});
+
+// Global function to populate sell modal with item data
+window.populateSellModal = function(itemData) {
+    // Populate item details
+    document.getElementById('sellItemSku').value = itemData.sku;
+    document.getElementById('sellItemSkuDisplay').textContent = itemData.sku;
+    document.getElementById('sellItemName').textContent = itemData.name;
+    document.getElementById('sellItemBrand').textContent = itemData.brand;
+    document.getElementById('sellItemCategory').textContent = itemData.category;
+    document.getElementById('sellItemSize').textContent = itemData.size;
+    document.getElementById('sellItemCondition').textContent = itemData.condition;
+    document.getElementById('sellItemCost').textContent = `${parseFloat(itemData.cost_of_item || 0).toFixed(2)}`;
+    document.getElementById('sellItemListedPrice').textContent = `${parseFloat(itemData.selling_price || 0).toFixed(2)}`;
+    
+    // Set default final price to listed price
+    document.getElementById('sellFinalPrice').value = parseFloat(itemData.selling_price || 0).toFixed(2);
+    
+    // Reset other fields
+    document.getElementById('sellDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('sellPlatform').value = 'Other';
+    document.getElementById('sellNotes').value = '';
+    
+    // Update calculations
+    if (window.updateSellCalculations) {
+        window.updateSellCalculations();
+    }
+};
+
+// Global function to get sell form data
+window.getSellFormData = function() {
+    return {
+        sku: document.getElementById('sellItemSku').value,
+        final_price: parseFloat(document.getElementById('sellFinalPrice').value) || 0,
+        sale_date: document.getElementById('sellDate').value,
+        platform: document.getElementById('sellPlatform').value,
+        notes: document.getElementById('sellNotes').value.trim()
+    };
+};
+
+// Global function to validate sell form
+window.validateSellForm = function() {
+    const form = document.getElementById('inventorySellForm');
+    const finalPrice = document.getElementById('sellFinalPrice');
+    const saleDate = document.getElementById('sellDate');
+    
+    let isValid = true;
+    
+    // Validate final price (can be 0)
+    if (finalPrice.value === '' || parseFloat(finalPrice.value) < 0) {
+        finalPrice.classList.add('is-invalid');
+        isValid = false;
+    } else {
+        finalPrice.classList.remove('is-invalid');
+    }
+    
+    // Validate sale date
+    if (!saleDate.value) {
+        saleDate.classList.add('is-invalid');
+        isValid = false;
+    } else {
+        saleDate.classList.remove('is-invalid');
+    }
+    
+    return isValid;
+};
+</script>

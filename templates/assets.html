@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}Business Assets - Girasoul{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/assets.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Assets Dashboard Header -->
+<div class="dashboard-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="dashboard-title">🏢 Business Assets</h2>
+            <p class="dashboard-subtitle">Manage and track your business equipment and assets</p>
+        </div>
+        <div>
+            <button class="btn btn-success" onclick="showAddAssetModal()">
+                ➕ Add Asset
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Assets Summary Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card summary-card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Total Assets</h6>
+                        <h3 class="card-value">{{ total_assets or 0 }}</h3>
+                    </div>
+                    <div class="summary-icon">
+                        🏢
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card summary-card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Total Value</h6>
+                        <h3 class="card-value">${{ "%.0f"|format(total_value or 0) }}</h3>
+                    </div>
+                    <div class="summary-icon">
+                        💰
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card summary-card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Active Assets</h6>
+                        <h3 class="card-value">{{ active_assets or 0 }}</h3>
+                    </div>
+                    <div class="summary-icon">
+                        ✅
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card summary-card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Disposed</h6>
+                        <h3 class="card-value">{{ disposed_assets or 0 }}</h3>
+                    </div>
+                    <div class="summary-icon">
+                        🗑️
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assets Filters -->
+<div class="card filters-card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <label for="filterCategory" class="form-label">Filter by Category</label>
+                <select class="form-select" id="filterCategory">
+                    <option value="">All Categories</option>
+                    <option value="Equipment">Equipment</option>
+                    <option value="Vehicles">Vehicles</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Machinery">Machinery</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="filterStatus" class="form-label">Filter by Status</label>
+                <select class="form-select" id="filterStatus">
+                    <option value="">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="disposed">Disposed</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="searchAssets" class="form-label">Search Assets</label>
+                <input type="text" class="form-control" id="searchAssets" 
+                       placeholder="Search by name or description...">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button class="btn btn-primary" onclick="filterAssets()">
+                        🔍 Filter
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="clearAssetFilters()">
+                        🔄 Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assets Table -->
+<div class="card assets-table">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">🏢 Business Assets</h5>
+        <span class="badge bg-info">{{ business_assets|length if business_assets else 0 }} total assets</span>
+    </div>
+    <div class="card-body">
+        {% if business_assets %}
+        <div class="table-responsive">
+            <table class="table table-hover" id="assetsTable">
+                <thead>
+                    <tr>
+                        <th>Asset Name</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Purchase Date</th>
+                        <th>Purchase Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="assetsTableBody">
+                    {% for asset in business_assets %}
+                    <tr data-asset-id="{{ asset.id }}" class="{{ 'table-secondary' if not asset.is_active else '' }}">
+                        <td>
+                            <div class="fw-bold">{{ asset.name }}</div>
+                            {% if asset.description %}
+                            <small class="text-muted">{{ asset.description }}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ asset.asset_type }}</td>
+                        <td>
+                            <span class="badge category-badge category-{{ asset.asset_category.lower() }}">
+                                {{ asset.asset_category }}
+                            </span>
+                        </td>
+                        <td>{{ asset.purchase_date.strftime('%Y-%m-%d') if asset.purchase_date else 'Unknown' }}</td>
+                        <td class="fw-bold text-success">${{ "%.2f"|format(asset.purchase_price) }}</td>
+                        <td>
+                            {% if asset.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Disposed</span>
+                            {% if asset.disposal_date %}
+                            <br><small class="text-muted">{{ asset.disposal_date.strftime('%Y-%m-%d') }}</small>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-primary btn-sm" 
+                                    onclick="editAsset({{ asset.id }})"
+                                    title="Edit Asset">
+                                ✏️
+                            </button>
+                            {% if asset.is_active %}
+                            <button class="btn btn-outline-warning btn-sm" 
+                                    onclick="disposeAsset({{ asset.id }}, '{{ asset.name|e }}')"
+                                    title="Dispose Asset">
+                                🗑️
+                            </button>
+                            {% endif %}
+                            <button class="btn btn-outline-info btn-sm" 
+                                    onclick="viewAssetDetails({{ asset.id }})"
+                                    title="View Details">
+                                👁️
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" 
+                                    onclick="deleteAsset({{ asset.id }}, '{{ asset.name|e }}')"
+                                    title="Delete Asset">
+                                ❌
+                            </button>
+                        </div>
+                    </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5" id="noAssetsMessage">
+            <div class="mb-4">
+                <i class="fas fa-building fa-4x text-muted"></i>
+            </div>
+            <h4 class="text-muted">No Business Assets Yet</h4>
+            <p class="text-muted mb-4">Start tracking your business equipment and assets</p>
+            <button class="btn btn-success" onclick="showAddAssetModal()">
+                ➕ Add Your First Asset
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Assets by Category -->
+{% if assets_by_category %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📊 Assets by Category</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for category, assets in assets_by_category.items() %}
+                    <div class="col-md-3 mb-3">
+                        <div class="category-summary">
+                            <h6 class="category-title">{{ category }}</h6>
+                            <div class="category-stats">
+                                <span class="badge bg-primary">{{ assets|length }} items</span>
+                                <span class="category-value">
+                                    ${{ "%.0f"|format(assets|sum(attribute='purchase_price')) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Include Asset Modal Component -->
+{% include 'components/modals/asset_modal.html' %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/assets.js') }}"></script>
+{% endblock %}

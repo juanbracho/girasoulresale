@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}Business Dashboard - Girasoul{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-6 fw-bold text-primary">💼 Girasoul Business Dashboard</h1>
+        <p class="lead text-muted">Complete overview of your business operations</p>
+    </div>
+</div>
+
+<!-- Business Metrics Row -->
+<div class="row mb-4" id="businessMetrics">
+    <div class="col-md-3">
+        <div class="card metric-card business-card">
+            <div class="metric-label">All Time Profit</div>
+            <div class="metric-value {{ 'positive' if metrics and metrics.all_time_profit and metrics.all_time_profit > 0 else 'negative' }}">
+                ${{ "%.2f"|format(metrics.all_time_profit if metrics and metrics.all_time_profit else 0) }}
+            </div>
+            <small class="text-muted">Total Business Profit</small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="metric-label">Monthly Expenses</div>
+            <div class="metric-value negative">
+                ${{ "%.2f"|format(metrics.monthly_expenses if metrics and metrics.monthly_expenses else 0) }}
+            </div>
+            <small class="text-muted">{{ current_month }}/{{ current_year }}</small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="metric-label">Current Year Profit</div>
+            <div class="metric-value {{ 'positive' if metrics and metrics.current_year_profit and metrics.current_year_profit > 0 else 'negative' }}">
+                ${{ "%.2f"|format(metrics.current_year_profit if metrics and metrics.current_year_profit else 0) }}
+            </div>
+            <small class="text-muted">{{ current_year }} YTD</small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="metric-label">Current Month Profit</div>
+            <div class="metric-value {{ 'positive' if metrics and metrics.current_month_profit and metrics.current_month_profit > 0 else 'negative' }}">
+                ${{ "%.2f"|format(metrics.current_month_profit if metrics and metrics.current_month_profit else 0) }}
+            </div>
+            <small class="text-muted">{{ current_month }}/{{ current_year }}</small>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Overview Row -->
+<div class="row mb-4">
+    <!-- Recent Transactions -->
+    <div class="col-md-6">
+        <div class="card dashboard-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">💰 Recent Transactions</h5>
+                <a href="{{ url_for('financial.financial') }}" class="btn btn-outline-primary btn-sm">
+                    View All
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_transactions and recent_transactions|length > 0 %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in recent_transactions[:5] %}
+                                <tr>
+                                    <td>{{ transaction.date.strftime('%m/%d') if transaction.date else '' }}</td>
+                                    <td>
+                                        <div class="fw-bold">{{ transaction.description }}</div>
+                                        <small class="text-muted">{{ transaction.category }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if transaction.transaction_type == 'Income' else 'danger' }}">
+                                            {{ transaction.transaction_type }}
+                                        </span>
+                                    </td>
+                                    <td class="fw-bold {{ 'text-success' if transaction.transaction_type == 'Income' else 'text-danger' }}">
+                                        ${{ "%.2f"|format(transaction.amount) }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4" id="noTransactionsMessage">
+                        <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">No transactions yet</h6>
+                        <p class="text-muted small">Start adding business transactions to see them here</p>
+                        <button class="btn btn-primary btn-sm" onclick="showAddExpenseModal()">
+                            Add Transaction
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Summary -->
+    <div class="col-md-6">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h5 class="mb-0">📊 Business Summary</h5>
+            </div>
+            <div class="card-body">
+                <!-- Assets Summary -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="text-center summary-item">
+                            <h4 class="text-primary mb-1">{{ assets_summary.total_assets if assets_summary else 0 }}</h4>
+                            <small class="text-muted">Total Assets</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center summary-item">
+                            <h4 class="text-success mb-1">${{ "%.0f"|format(assets_summary.total_current_value if assets_summary and assets_summary.total_current_value else 0) }}</h4>
+                            <small class="text-muted">Assets Value</small>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="summary-divider">
+
+                <!-- Inventory Summary -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="text-center summary-item">
+                            <h4 class="text-info mb-1">{{ inventory_summary.total_items if inventory_summary else 0 }}</h4>
+                            <small class="text-muted">Inventory Items</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center summary-item">
+                            <h4 class="text-warning mb-1">${{ "%.0f"|format(inventory_summary.total_value if inventory_summary and inventory_summary.total_value else 0) }}</h4>
+                            <small class="text-muted">Inventory Value</small>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="summary-divider">
+
+                <!-- Quick Actions -->
+                <div class="d-grid gap-2 quick-actions">
+                    <a href="{{ url_for('inventory.inventory') }}" class="btn btn-outline-primary btn-sm">
+                        📦 Manage Inventory
+                    </a>
+                    <a href="{{ url_for('assets.assets') }}" class="btn btn-outline-secondary btn-sm">
+                        🏢 View Assets
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Getting Started Section (shown when no data) -->
+{% if not recent_transactions or recent_transactions|length == 0 %}
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-light getting-started-card">
+            <div class="card-header">
+                <h5 class="mb-0">🚀 Getting Started</h5>
+            </div>
+            <div class="card-body">
+                <p class="lead">Welcome to your Girasoul Business Dashboard! Here's how to get started:</p>
+                <div class="row getting-started-steps">
+                    <div class="col-md-3">
+                        <div class="text-center p-3 getting-started-step">
+                            <i class="fas fa-plus-circle fa-3x text-primary mb-3"></i>
+                            <h6>1. Add Transactions</h6>
+                            <p class="small text-muted">Start by adding your business income and expenses</p>
+                            <button class="btn btn-primary btn-sm" onclick="showAddExpenseModal()">
+                                Add Transaction
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 getting-started-step">
+                            <i class="fas fa-boxes fa-3x text-info mb-3"></i>
+                            <h6>2. Track Inventory</h6>
+                            <p class="small text-muted">Add your fashion inventory items to track sales</p>
+                            <a href="{{ url_for('inventory.inventory') }}" class="btn btn-info btn-sm">
+                                Manage Inventory
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 getting-started-step">
+                            <i class="fas fa-desktop fa-3x text-success mb-3"></i>
+                            <h6>3. Add Assets</h6>
+                            <p class="small text-muted">Record your business equipment and assets</p>
+                            <a href="{{ url_for('assets.assets') }}" class="btn btn-success btn-sm">
+                                Add Assets
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 getting-started-step">
+                            <i class="fas fa-chart-line fa-3x text-warning mb-3"></i>
+                            <h6>4. View Reports</h6>
+                            <p class="small text-muted">Monitor your financial performance</p>
+                            <a href="{{ url_for('financial.financial') }}" class="btn btn-warning btn-sm">
+                                View Financial
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Add Transaction Modal -->
+{% include 'components/modals/transactions_modal.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

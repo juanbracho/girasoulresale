@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+{% block title %}Business Financial - Girasoul{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/financial.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-6 fw-bold text-primary">💰 Business Financial Management</h1>
+        <p class="lead text-muted">Track business income, expenses, and financial performance</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <button class="btn btn-primary" onclick="showAddExpenseModal()">
+            Add Transaction
+        </button>
+    </div>
+</div>
+
+<!-- Financial Overview Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card metric-card business-card">
+            <div class="metric-label">Monthly Revenue</div>
+            <div class="metric-value positive">
+                ${{ "%.2f"|format(financial_summary.monthly_revenue if financial_summary else 0) }}
+            </div>
+            <small class="text-muted">{{ current_month_name }} {{ current_year }}</small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="metric-label">Monthly Expenses</div>
+            <div class="metric-value negative">
+                ${{ "%.2f"|format(financial_summary.monthly_expenses if financial_summary else 0) }}
+            </div>
+            <small class="text-muted">{{ current_month_name }} {{ current_year }}</small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="metric-label">Monthly Profit</div>
+            <div class="metric-value {{ 'positive' if financial_summary and financial_summary.monthly_profit > 0 else 'negative' }}">
+                ${{ "%.2f"|format(financial_summary.monthly_profit if financial_summary else 0) }}
+            </div>
+            <small class="text-muted">{{ current_month_name }} {{ current_year }}</small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="metric-label">YTD Profit</div>
+            <div class="metric-value {{ 'positive' if financial_summary and financial_summary.ytd_profit > 0 else 'negative' }}">
+                ${{ "%.2f"|format(financial_summary.ytd_profit if financial_summary else 0) }}
+            </div>
+            <small class="text-muted">Year to Date</small>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Controls -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card filter-controls">
+            <div class="card-body">
+                <form method="GET" class="row g-3 align-items-end">
+                    <div class="col-auto">
+                        <label for="yearSelect" class="form-label">Year</label>
+                        <select class="form-select" id="yearSelect" name="year">
+                            {% for year_option in available_years %}
+                            <option value="{{ year_option }}" {{ 'selected' if year_option == selected_year else '' }}>
+                                {% if year_option == 'all' %}All Years{% else %}{{ year_option }}{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <label for="monthSelect" class="form-label">Month</label>
+                        <select class="form-select" id="monthSelect" name="month">
+                            <option value="all" {{ 'selected' if selected_month == 'all' else '' }}>All Months</option>
+                            {% for month_num, month_name in available_months %}
+                            <option value="{{ month_num }}" {{ 'selected' if month_num == selected_month else '' }}>
+                                {{ month_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <label for="categorySelect" class="form-label">Category</label>
+                        <select class="form-select" id="categorySelect" name="category">
+                            <option value="all" {{ 'selected' if selected_category == 'all' else '' }}>All Categories</option>
+                            {% for category_option in available_categories %}
+                            <option value="{{ category_option }}" {{ 'selected' if category_option == selected_category else '' }}>
+                                {{ category_option }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">
+                            🔍 Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Financial Charts -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card chart-card">
+            <div class="card-header">
+                <h5 class="mb-0">📈 Revenue vs Expenses</h5>
+            </div>
+            <div class="card-body">
+                <div id="revenueExpenseChart" class="chart-container"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card chart-card">
+            <div class="card-header">
+                <h5 class="mb-0">🏆 Expenses by Category</h5>
+            </div>
+            <div class="card-body">
+                <div id="expenseCategoryChart" class="chart-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Breakdown -->
+{% if category_breakdown %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card category-breakdown">
+            <div class="card-header">
+                <h5 class="mb-0">📊 Financial Breakdown by Category</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Income</th>
+                                <th>Expenses</th>
+                                <th>Net</th>
+                                <th>Transactions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category in category_breakdown %}
+                            <tr>
+                                <td class="fw-bold">{{ category.name }}</td>
+                                <td class="text-success">${{ "%.2f"|format(category.income) }}</td>
+                                <td class="text-danger">${{ "%.2f"|format(category.expenses) }}</td>
+                                <td class="{{ 'text-success' if category.net > 0 else 'text-danger' }}">
+                                    ${{ "%.2f"|format(category.net) }}
+                                </td>
+                                <td>{{ category.transaction_count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Transactions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card transactions-table">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">💼 Recent Business Transactions</h5>
+                <div class="d-flex align-items-center gap-2">
+                    {% if pagination %}
+                    <span class="badge bg-info">
+                        Showing {{ ((pagination.page - 1) * pagination.per_page + 1) if pagination.total > 0 else 0 }}-{{ 
+                        (pagination.page * pagination.per_page) if (pagination.page * pagination.per_page) < pagination.total else pagination.total }} 
+                        of {{ pagination.total }} transactions
+                    </span>
+                    {% else %}
+                    <span class="badge bg-info">{{ business_transactions|length if business_transactions else 0 }} transactions</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                {% if business_transactions %}
+                <div class="table-responsive">
+                    <table class="table table-hover" id="transactionsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in business_transactions %}
+                            <tr class="transaction-{{ 'income' if transaction.transaction_type == 'Income' else 'expense' }}">
+                                <td>{{ transaction.date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <strong>{{ transaction.description[:50] }}{{ '...' if transaction.description|length > 50 else '' }}</strong>
+                                    {% if transaction.notes %}
+                                    <br><small class="text-muted">{{ transaction.notes[:100] }}{{ '...' if transaction.notes|length > 100 else '' }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ transaction.category }}</span>
+                                    {% if transaction.sub_category %}
+                                    <br><small class="text-muted">{{ transaction.sub_category }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {{ 'bg-success' if transaction.transaction_type == 'Income' else 'bg-danger' }}">
+                                        {{ transaction.transaction_type }}
+                                    </span>
+                                </td>
+                                <td class="fw-bold {{ 'text-success' if transaction.transaction_type == 'Income' else 'text-danger' }}">
+                                    ${{ "%.2f"|format(transaction.amount) }}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="editTransaction({{ 'transaction.id' }})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteTransaction({{ 'transaction.id' }})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination Controls -->
+                {% if pagination and pagination.pages > 1 %}
+                <nav aria-label="Transaction pagination" class="mt-3">
+                    <ul class="pagination justify-content-center">
+                        <!-- Previous Page -->
+                        {% if pagination.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('financial.financial', year=selected_year, month=selected_month, page=pagination.prev_num) }}">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fas fa-chevron-left"></i> Previous</span>
+                        </li>
+                        {% endif %}
+
+                        <!-- Page Numbers -->
+                        {% for page_num in pagination.iter_pages %}
+                            {% if page_num %}
+                                {% if page_num != pagination.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('financial.financial', year=selected_year, month=selected_month, page=page_num) }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                                {% endif %}
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">…</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        <!-- Next Page -->
+                        {% if pagination.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('financial.financial', year=selected_year, month=selected_month, page=pagination.next_num) }}">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Next <i class="fas fa-chevron-right"></i></span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    
+                     <!-- Pagination Info -->
+                    <div class="text-center text-muted mt-2">
+                        <small>
+                            Page {{ pagination.page }} of {{ pagination.pages }} 
+                            ({{ pagination.total }} total transaction{{ 's' if pagination.total != 1 else '' }})
+                        </small>
+                    </div>
+                </nav>
+                {% endif %}
+                
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-receipt fa-2x mb-2"></i>
+                    <p>No transactions found for the selected period.</p>
+                    <button class="btn btn-primary" onclick="showAddExpenseModal()">
+                        Add First Transaction
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Transaction Modal Component -->
+{% include 'components/modals/transactions_modal.html' %}
+
+<!-- Hidden data for JavaScript -->
+<script type="application/json" id="financialData">
+{
+    "summary": {
+        "monthly_revenue": {{ financial_summary.monthly_revenue if financial_summary else 0 }},
+        "monthly_expenses": {{ financial_summary.monthly_expenses if financial_summary else 0 }},
+        "ytd_revenue": {{ financial_summary.ytd_revenue if financial_summary else 0 }},
+        "ytd_expenses": {{ financial_summary.ytd_expenses if financial_summary else 0 }}
+    },
+    "categoryBreakdown": {{ category_breakdown|tojson if category_breakdown else '[]' }},
+    "selectedYear": {% if selected_year == 'all' %}"all"{% else %}{{ selected_year }}{% endif %},
+    "selectedMonth": "{{ selected_month }}",
+    "selectedCategory": "{{ selected_category }}",
+    "isAllYears": {% if selected_year == 'all' %}true{% else %}false{% endif %}
+}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/financial.js') }}"></script>
+{% endblock %}

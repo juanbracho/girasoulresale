@@ -1,0 +1,409 @@
+/* Dashboard Specific Styles */
+
+/* =============================================================================
+   DASHBOARD LAYOUT AND CARDS
+   ============================================================================= */
+
+.dashboard-card {
+    border: none;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.dashboard-card .card-header {
+    background-color: var(--light-color);
+    border-bottom: 1px solid #dee2e6;
+    border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
+    padding: 1rem 1.5rem;
+}
+
+.dashboard-card .card-body {
+    padding: 1.5rem;
+}
+
+/* =============================================================================
+   BUSINESS METRICS CARDS
+   ============================================================================= */
+
+#businessMetrics .metric-card {
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#businessMetrics .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#businessMetrics .metric-card:hover::before {
+    opacity: 1;
+}
+
+#businessMetrics .metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.business-card {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.business-card .metric-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.business-card .metric-value {
+    color: white;
+}
+
+/* =============================================================================
+   SUMMARY ITEMS
+   ============================================================================= */
+
+.summary-item {
+    padding: 0.5rem;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+}
+
+.summary-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    transform: scale(1.05);
+}
+
+.summary-item h4 {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.summary-divider {
+    margin: 1rem 0;
+    border-color: #dee2e6;
+    opacity: 0.5;
+}
+
+/* =============================================================================
+   QUICK ACTIONS
+   ============================================================================= */
+
+.quick-actions .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.quick-actions .btn:hover {
+    transform: translateX(5px);
+}
+
+/* =============================================================================
+   TRANSACTIONS TABLE
+   ============================================================================= */
+
+.dashboard-card .table {
+    margin-bottom: 0;
+    box-shadow: none;
+}
+
+.dashboard-card .table th {
+    background-color: transparent;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--dark-color);
+}
+
+.dashboard-card .table td {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-card .table tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.03);
+}
+
+.dashboard-card .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+}
+
+/* =============================================================================
+   NO DATA MESSAGES
+   ============================================================================= */
+
+#noTransactionsMessage {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#noTransactionsMessage .fas {
+    opacity: 0.6;
+}
+
+#noTransactionsMessage h6 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* =============================================================================
+   GETTING STARTED SECTION
+   ============================================================================= */
+
+.getting-started-card {
+    border: 2px dashed #dee2e6;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
+}
+
+.getting-started-card .card-header {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.getting-started-steps {
+    margin-top: 1rem;
+}
+
+.getting-started-step {
+    background: white;
+    border-radius: var(--border-radius);
+    margin: 0.5rem;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.getting-started-step:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-medium);
+    border-color: rgba(102, 126, 234, 0.2);
+}
+
+.getting-started-step .fas {
+    transition: transform 0.3s ease;
+}
+
+.getting-started-step:hover .fas {
+    transform: scale(1.1);
+}
+
+.getting-started-step h6 {
+    color: var(--dark-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.getting-started-step p {
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .dashboard-card .card-body {
+        padding: 1rem;
+    }
+    
+    .dashboard-card .card-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    #businessMetrics .metric-card {
+        margin-bottom: 1rem;
+        height: 100px;
+    }
+    
+    .summary-item h4 {
+        font-size: 1.25rem;
+    }
+    
+    .getting-started-step {
+        margin: 0.25rem;
+        padding: 1rem !important;
+    }
+    
+    .getting-started-step .fas {
+        font-size: 2rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .dashboard-card .table {
+        font-size: 0.85rem;
+    }
+    
+    .dashboard-card .table th,
+    .dashboard-card .table td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .row.mb-4:first-child .col-md-8 h1 {
+        font-size: 1.75rem;
+    }
+    
+    .row.mb-4:first-child .col-md-8 .lead {
+        font-size: 1rem;
+    }
+    
+    .dropdown-toggle {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    #businessMetrics {
+        margin-bottom: 2rem !important;
+    }
+    
+    .getting-started-steps .col-md-3 {
+        margin-bottom: 1rem;
+    }
+    
+    .quick-actions .btn {
+        font-size: 0.85rem;
+    }
+}
+
+/* =============================================================================
+   DASHBOARD ANIMATIONS
+   ============================================================================= */
+
+.metric-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.metric-card:nth-child(1) { animation-delay: 0.1s; }
+.metric-card:nth-child(2) { animation-delay: 0.2s; }
+.metric-card:nth-child(3) { animation-delay: 0.3s; }
+.metric-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-card {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+.dashboard-card:nth-child(2) {
+    animation: slideInRight 0.6s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* =============================================================================
+   LOADING STATES
+   ============================================================================= */
+
+.metric-loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+    height: 20px;
+    width: 60%;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.dashboard-loading .metric-value {
+    color: transparent;
+    position: relative;
+}
+
+.dashboard-loading .metric-value::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 20px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+/* =============================================================================
+   PRINT STYLES
+   ============================================================================= */
+
+@media print {
+    .dashboard-card {
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+        break-inside: avoid;
+    }
+    
+    .getting-started-card {
+        display: none !important;
+    }
+    
+    .btn, .dropdown {
+        display: none !important;
+    }
+    
+    #businessMetrics .metric-card {
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+    }
+}

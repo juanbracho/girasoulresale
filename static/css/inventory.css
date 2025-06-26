@@ -1,0 +1,637 @@
+/* Inventory Management Styles */
+
+/* Loading overlay */
+#loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Toast notifications */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    min-width: 300px;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+/* Inventory table improvements */
+.table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#inventoryTable th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#inventoryTable tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.15s ease-in-out;
+}
+
+/* Status badges */
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Button groups */
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.775rem;
+}
+
+/* Card view */
+.card {
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Modal improvements */
+.modal-lg {
+    max-width: 800px;
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+}
+
+/* Form styling */
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.is-valid {
+    border-color: #198754;
+}
+
+/* Quick stats cards */
+.card {
+    border: none;
+    border-radius: 8px;
+}
+
+.bg-opacity-10 {
+    background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+}
+
+/* Search and filter section */
+.card-body .row.g-3 .col-md-1 {
+    display: flex;
+    align-items: end;
+}
+
+/* View toggle buttons */
+.btn-group .btn {
+    border-radius: 0;
+}
+
+.btn-group .btn:first-child {
+    border-top-left-radius: 0.375rem;
+    border-bottom-left-radius: 0.375rem;
+}
+
+.btn-group .btn:last-child {
+    border-top-right-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.125rem 0.25rem;
+        font-size: 0.7rem;
+    }
+    
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Empty state styling */
+.empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.empty-state i {
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+/* Profit calculation styling */
+.profit-positive {
+    color: #198754 !important;
+}
+
+.profit-negative {
+    color: #dc3545 !important;
+}
+
+.profit-neutral {
+    color: #6c757d !important;
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Character counter */
+.form-text {
+    font-size: 0.775rem;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+/* Modal specific styles */
+#inventoryModal .alert,
+#inventorySellModal .alert {
+    margin-bottom: 1rem;
+}
+
+/* Sell modal profit display */
+.profit-calculation .h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Fix for Bootstrap modal backdrop */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Ensure proper spacing */
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.me-2 {
+    margin-right: 0.5rem !important;
+}
+
+.me-1 {
+    margin-right: 0.25rem !important;
+}
+
+/* Add these styles to the end of inventory.css */
+
+/* =============================================================================
+   ENHANCED FILTER STYLES
+   ============================================================================= */
+
+/* =============================================================================
+   ANIMATION ENHANCEMENTS
+   ============================================================================= */
+
+.filter-controls {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-badge {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* =============================================================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================================================= */
+
+.filter-controls .form-label {
+    cursor: pointer;
+}
+
+.filter-controls .btn:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+.filter-badge .btn-close:focus {
+    outline: 1px solid #fff;
+    outline-offset: 1px;
+}
+
+/* Screen reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}controls {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.filter-controls .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.filter-controls .form-select,
+.filter-controls .form-control {
+    border: 1px solid #ced4da;
+    transition: all 0.15s ease-in-out;
+    font-size: 0.875rem;
+}
+
+.filter-controls .form-select:focus,
+.filter-controls .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    transform: translateY(-1px);
+}
+
+.filter-controls .btn {
+    transition: all 0.15s ease-in-out;
+}
+
+.filter-controls .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* =============================================================================
+   FILTER BADGES AND STATUS
+   ============================================================================= */
+
+.filter-status-display {
+    background: rgba(102, 126, 234, 0.05);
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    margin-top: 1rem;
+}
+
+.filter-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    margin: 0.125rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.filter-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-badge .btn-close {
+    margin-left: 0.5rem;
+    padding: 0;
+    opacity: 0.7;
+    transition: opacity 0.15s ease-in-out;
+}
+
+.filter-badge .btn-close:hover {
+    opacity: 1;
+}
+
+/* Badge color variations */
+.badge.bg-primary { background-color: #667eea !important; }
+.badge.bg-info { background-color: #17a2b8 !important; }
+.badge.bg-success { background-color: #28a745 !important; }
+.badge.bg-warning { background-color: #ffc107 !important; color: #212529 !important; }
+.badge.bg-secondary { background-color: #6c757d !important; }
+
+/* =============================================================================
+   RESULTS SUMMARY STYLING
+   ============================================================================= */
+
+.results-summary {
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 0.75rem 0;
+    margin-top: 1rem;
+    border-radius: 0 0 0.375rem 0.375rem;
+}
+
+.results-summary .text-muted {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.results-summary .btn-link {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    color: #667eea;
+    text-decoration: none !important;
+    border-radius: 0.25rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.results-summary .btn-link:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+    color: #5a6fd8;
+}
+
+/* =============================================================================
+   SEARCH INPUT ENHANCEMENTS
+   ============================================================================= */
+
+.search-input-group {
+    position: relative;
+}
+
+.search-input-group .form-control {
+    padding-right: 2.5rem;
+}
+
+.search-input-group .btn {
+    position: absolute;
+    right: 0.375rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    border: none;
+    background: none;
+    color: #6c757d;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.search-input-group .btn:hover {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+/* =============================================================================
+   RESPONSIVE FILTER LAYOUT
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .filter-controls {
+        padding: 1rem;
+    }
+    
+    .filter-controls .row > div {
+        margin-bottom: 1rem;
+    }
+    
+    .filter-controls .row > div:last-child {
+        margin-bottom: 0;
+    }
+    
+    .filter-badge {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+        margin: 0.125rem 0.25rem 0.125rem 0;
+    }
+    
+    .results-summary {
+        text-align: center !important;
+    }
+    
+    .results-summary .row > div {
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .filter-controls .col-md-1 .d-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.25rem;
+    }
+    
+    .filter-badge {
+        display: block;
+        margin: 0.25rem 0;
+        text-align: center;
+    }
+}
+
+/* =============================================================================
+   FILTER LOADING STATES
+   ============================================================================= */
+
+.filter-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.filter-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1rem;
+    height: 1rem;
+    margin: -0.5rem 0 0 -0.5rem;
+    border: 2px solid #dee2e6;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =============================================================================
+   ENHANCED FORM VALIDATION STYLES
+   ============================================================================= */
+
+.filter-controls .is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.filter-controls .invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: #dc3545;
+}
+
+/* =============================================================================
+   FILTER BUTTON ENHANCEMENTS
+   ============================================================================= */
+
+.filter-controls .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-controls .btn-primary:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.filter-controls .btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.filter-controls .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
+}
+
+/* =============================================================================
+   ANIMATION ENHANCEMENTS
+   ============================================================================= */
+
+.filter-controls {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-badge {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* =============================================================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================================================= */
+
+.filter-controls .form-label {
+    cursor: pointer;
+}
+
+.filter-controls .btn:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+.filter-badge .btn-close:focus {
+    outline: 1px solid #fff;
+    outline-offset: 1px;
+}
+
+/* Screen reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

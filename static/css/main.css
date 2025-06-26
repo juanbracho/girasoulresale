@@ -1,0 +1,506 @@
+/* Girasoul Business Dashboard - Main CSS */
+/* Global styles and base navigation */
+
+/* =============================================================================
+   GLOBAL VARIABLES AND RESETS
+   ============================================================================= */
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #495057;
+    --shadow-light: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-medium: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-heavy: 0 6px 12px rgba(0,0,0,0.15);
+    --border-radius: 10px;
+    --border-radius-large: 15px;
+}
+
+/* Reset and base styles */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    line-height: 1.6;
+}
+
+/* =============================================================================
+   NAVIGATION STYLES
+   ============================================================================= */
+
+.business-nav {
+    background: var(--primary-gradient);
+    box-shadow: var(--shadow-medium);
+    border-bottom: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+.business-nav .navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: white !important;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.business-nav .navbar-brand:hover {
+    transform: scale(1.05);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.business-nav .nav-link {
+    font-weight: 500;
+    margin: 0 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    color: rgba(255, 255, 255, 0.9) !important;
+    padding: 0.5rem 1rem !important;
+}
+
+.business-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white !important;
+    transform: translateY(-1px);
+}
+
+.business-nav .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+    color: white !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.business-nav .dropdown-menu {
+    border: none;
+    box-shadow: var(--shadow-heavy);
+    border-radius: var(--border-radius);
+    margin-top: 0.5rem;
+}
+
+.business-nav .dropdown-item {
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.business-nav .dropdown-item:hover {
+    background-color: var(--light-color);
+    transform: translateX(5px);
+}
+
+/* Mobile navbar */
+@media (max-width: 991px) {
+    .business-nav .navbar-collapse {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: var(--border-radius);
+        margin-top: 1rem;
+        padding: 1rem;
+    }
+    
+    .business-nav .nav-link {
+        margin: 0.25rem 0;
+        text-align: center;
+    }
+}
+
+/* =============================================================================
+   UTILITY CLASSES
+   ============================================================================= */
+
+/* Gradients */
+.business-gradient {
+    background: var(--primary-gradient);
+}
+
+.business-gradient-light {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+.business-text-gradient {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+/* Shadows */
+.business-shadow {
+    box-shadow: var(--shadow-medium);
+}
+
+.business-shadow-hover {
+    transition: box-shadow 0.3s ease;
+}
+
+.business-shadow-hover:hover {
+    box-shadow: var(--shadow-heavy);
+}
+
+/* Cards */
+.business-card {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-large);
+    transition: all 0.3s ease;
+}
+
+.business-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-heavy);
+}
+
+/* Metric Cards */
+.metric-card {
+    background: white;
+    border-radius: var(--border-radius-large);
+    padding: 1.5rem;
+    text-align: center;
+    border: none;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: var(--dark-color);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.metric-value.positive {
+    color: var(--success-color);
+}
+
+.metric-value.negative {
+    color: var(--danger-color);
+}
+
+.metric-value.neutral {
+    color: var(--info-color);
+}
+
+/* =============================================================================
+   FLASH MESSAGES
+   ============================================================================= */
+
+.alert {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    margin-bottom: 1rem;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
+    border-left: 4px solid var(--success-color);
+    color: var(--success-color);
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+    border-left: 4px solid var(--danger-color);
+    color: var(--danger-color);
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+    border-left: 4px solid var(--warning-color);
+    color: #856404;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, rgba(23, 162, 184, 0.1) 0%, rgba(23, 162, 184, 0.05) 100%);
+    border-left: 4px solid var(--info-color);
+    color: var(--info-color);
+}
+
+/* =============================================================================
+   FOOTER STYLES
+   ============================================================================= */
+
+footer {
+    background-color: var(--light-color) !important;
+    border-top: 1px solid #dee2e6;
+    margin-top: auto;
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* =============================================================================
+   FORM STYLES
+   ============================================================================= */
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-control.is-valid, .form-select.is-valid {
+    border-color: var(--success-color);
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-control.is-invalid, .form-select.is-invalid {
+    border-color: var(--danger-color);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* =============================================================================
+   BUTTON STYLES
+   ============================================================================= */
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-light);
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+}
+
+/* =============================================================================
+   TABLE STYLES
+   ============================================================================= */
+
+.table {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    background: white;
+}
+
+.table th {
+    background-color: var(--light-color);
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: var(--dark-color);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+/* =============================================================================
+   MODAL STYLES
+   ============================================================================= */
+
+.modal-content {
+    border: none;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-heavy);
+}
+
+.modal-header {
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
+    border-bottom: none;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+.modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 2rem;
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .metric-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .metric-value {
+        font-size: 1.5rem;
+    }
+    
+    .metric-label {
+        font-size: 0.8rem;
+    }
+    
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .business-nav .navbar-brand {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 0.25rem;
+        width: 100%;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .modal-footer {
+        padding: 1rem;
+    }
+}
+
+/* =============================================================================
+   ANIMATION UTILITIES
+   ============================================================================= */
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+/* =============================================================================
+   LOADING STATES
+   ============================================================================= */
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* =============================================================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================================================= */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus indicators */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .business-nav {
+        border-bottom-width: 4px;
+    }
+    
+    .metric-card {
+        border: 2px solid #dee2e6;
+    }
+}
