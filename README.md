@@ -329,3 +329,7 @@ This project is created for personal business use. Please respect intellectual p
 ---
 
 **Built with ❤️ for small business owners who value simplicity and control over their data.**
+
+![image](https://github.com/user-attachments/assets/3b33b979-09c4-4be5-a0bb-85a2568b73b0)
+![image](https://github.com/user-attachments/assets/dd95e794-9727-4afc-a756-25dd82543100)
+![image](https://github.com/user-attachments/assets/7343e425-1241-4ff0-9947-6747fadbd55f)
