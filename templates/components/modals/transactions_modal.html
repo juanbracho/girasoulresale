@@ -1,15 +1,21 @@
-<!-- Business Transaction Modal - UPDATED: Removed vendor/client and invoice/reference fields -->
+<!-- Business Transaction Modal - UPDATED: Added transaction type selector (Income/Expense) -->
 <div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="transactionModalLabel">Add Business Expense</h5>
+                <h5 class="modal-title" id="transactionModalLabel">Add Business Transaction</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="transactionForm" novalidate>
-                    <!-- Hidden field for transaction type -->
-                    <input type="hidden" id="transactionType" value="Expense">
+                    <!-- Transaction type selector -->
+                    <div class="mb-3">
+                        <label for="transactionType" class="form-label">Transaction Type <span class="text-danger">*</span></label>
+                        <select class="form-select" id="transactionType" required>
+                            <option value="Expense">Expense</option>
+                            <option value="Income">Income</option>
+                        </select>
+                    </div>
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -83,7 +89,7 @@
                     <i class="fas fa-times me-1"></i> Cancel
                 </button>
                 <button type="button" class="btn btn-primary" onclick="saveTransaction()">
-                    <span id="saveTransactionText">Save Expense</span>
+                    <span id="saveTransactionText">Save Transaction</span>
                 </button>
             </div>
         </div>

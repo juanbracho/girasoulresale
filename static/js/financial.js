@@ -168,8 +168,8 @@ function showTransactionModal(type = 'Expense') {
         // Reset form
         if (form) form.reset();
         
-        // Set transaction type to Expense only
-        if (typeInput) typeInput.value = 'Expense';
+        // Set transaction type
+        if (typeInput) typeInput.value = type;
         
         // Update modal title and button for add mode
         if (modalTitle) modalTitle.textContent = `Add Business ${type}`;
@@ -178,12 +178,22 @@ function showTransactionModal(type = 'Expense') {
         // Set today's date
         setTodaysDate();
         
-        // Populate categories for expense type
-        populateCategoriesByType('Expense');
+        // Populate categories for selected type
+        populateCategoriesByType(type);
         
         // Show modal
         const bootstrapModal = new bootstrap.Modal(modal);
         bootstrapModal.show();
+        
+        // Listen for transaction type changes
+        if (typeInput) {
+            typeInput.onchange = function() {
+                const selectedType = typeInput.value;
+                if (modalTitle) modalTitle.textContent = `Add Business ${selectedType}`;
+                if (saveText) saveText.textContent = `Save ${selectedType}`;
+                populateCategoriesByType(selectedType);
+            };
+        }
         
         console.log(`✅ ${type} modal opened successfully`);
         
@@ -211,15 +221,13 @@ function setTodaysDate() {
 function populateCategoriesByType(type) {
     const categorySelect = document.getElementById('transactionCategory');
     if (!categorySelect) return;
-    
     // Clear existing options except the first one
     const firstOption = categorySelect.firstElementChild;
     categorySelect.innerHTML = '';
     if (firstOption) {
         categorySelect.appendChild(firstOption);
     }
-    
-    // Expense categories for fashion business (reusing dashboard logic)
+    // Always use expense categories for both income and expense
     const expenseCategories = [
         'Cost of Goods Sold',
         'Operations', 
@@ -234,7 +242,6 @@ function populateCategoriesByType(type) {
         'Insurance',
         'Other'
     ];
-    
     expenseCategories.forEach(category => {
         const option = document.createElement('option');
         option.value = category;
@@ -370,13 +377,14 @@ async function saveTransaction() {
     
     try {
         // Collect form data (reusing dashboard structure)
+        const typeInput = document.getElementById('transactionType');
         const formData = {
             date: document.getElementById('transactionDate')?.value,
             description: document.getElementById('transactionDescription')?.value?.trim(),
             amount: parseFloat(document.getElementById('transactionAmount')?.value),
             category: document.getElementById('transactionCategory')?.value,
             sub_category: document.getElementById('transactionSubCategory')?.value || '',
-            transaction_type: 'Expense', // Always expense for financial page
+            transaction_type: typeInput ? typeInput.value : 'Expense',
             account_name: document.getElementById('transactionAccount')?.value || 'Business Account',
             notes: document.getElementById('transactionNotes')?.value?.trim() || ''
         };
