@@ -19,40 +19,50 @@ def financial():
             year = 'all'
         else:
             year = int(year_param)
-            
-        month = request.args.get('month', 'all')
+        month = request.args.get('month', datetime.now().month)
+        if month != 'all':
+            month = int(month)
         category = request.args.get('category', 'all')
         page = request.args.get('page', 1, type=int)
-        
+
         # Get available years for filter
         available_years = get_available_years()
-        
+
         # Default to current year if no data
         if not available_years:
-            available_years = [year - 1, year, year + 1]
-        
+            if isinstance(year, int):
+                available_years = [year - 1, year, year + 1]
+            else:
+                available_years = [datetime.now().year - 1, datetime.now().year, datetime.now().year + 1]
+
         # Get available months (all 12 months)
         available_months = get_available_months()
-        
+
         # Get available categories
         available_categories = get_available_categories()
-        
+
         # Get financial summary
         financial_summary = calculate_financial_summary(year, month, category)
-        
+
         # Get recent business transactions with pagination (50 per page)
         per_page = 50
         business_transactions, pagination_info = get_filtered_transactions_paginated(year, month, category, page, per_page)
-        
+
         # Get category breakdown
         category_breakdown = get_category_breakdown(year, month, category)
-        
+
         # Get current month name
         if year == 'all':
-            current_month_name = datetime(datetime.now().year, int(month) if month != 'all' else datetime.now().month, 1).strftime('%B')
+            if month != 'all':
+                current_month_name = datetime(datetime.now().year, int(month), 1).strftime('%B')
+            else:
+                current_month_name = datetime.now().strftime('%B')
             current_year = 'All Years'
         else:
-            current_month_name = datetime(year, int(month) if month != 'all' else datetime.now().month, 1).strftime('%B')
+            if month != 'all':
+                current_month_name = datetime(year, int(month), 1).strftime('%B')
+            else:
+                current_month_name = datetime(year, datetime.now().month, 1).strftime('%B')
             current_year = year
         
         return render_template('financial.html',

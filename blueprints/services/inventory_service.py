@@ -2,13 +2,17 @@
 Business logic for inventory management - COMPLETE IMPLEMENTATION
 """
 
+import logging
 from datetime import datetime, date
 from sqlalchemy import func
 from models import db, BusinessInventory, BusinessTransaction
 from blueprints.services.transaction_service import TransactionService
-from blueprints.utils.validators import validate_inventory_data
+from blueprints.utils.validators import validate_inventory_data, sanitize_input
 import random
 import string
+from sqlalchemy.exc import IntegrityError
+
+logger = logging.getLogger(__name__)
 
 class InventoryService:
     """Service class for inventory business logic"""
@@ -33,17 +37,17 @@ class InventoryService:
             # Create inventory item using correct field names from database schema
             inventory_item = BusinessInventory(
                 sku=sku,
-                name=data['name'],
-                description=data.get('description', ''),
-                category=data['category'],
+                name=sanitize_input(data['name'], 100),
+                description=sanitize_input(data.get('description', ''), 500),
+                category=sanitize_input(data['category'], 50),
                 cost_of_item=float(data['cost_of_item']),  # Correct field name
                 selling_price=float(data['selling_price']),
                 listing_status=data.get('listing_status', 'inventory'),
-                location=data.get('location', ''),
-                size=data.get('size', ''),
-                condition=data.get('condition', ''),
-                brand=data.get('brand', ''),
-                drop_field=data.get('drop_field', '')  # Collection tracking
+                location=sanitize_input(data.get('location', ''), 100),
+                size=sanitize_input(data.get('size', ''), 20),
+                condition=sanitize_input(data.get('condition', ''), 20),
+                brand=sanitize_input(data.get('brand', ''), 100),
+                drop_field=sanitize_input(data.get('drop_field', ''), 255)  # Collection tracking
             )
             
             # Calculate w_tax_price automatically (8.3% tax)
@@ -77,6 +81,11 @@ class InventoryService:
                 'transaction_id': transaction_result['transaction']['id']
             }
             
+        except IntegrityError as e:
+            db.session.rollback()
+            if 'UNIQUE constraint failed: business_inventory.sku' in str(e):
+                return {'success': False, 'error': 'SKU already exists'}
+            return {'success': False, 'error': 'Database integrity error'}
         except Exception as e:
             db.session.rollback()
             return {'success': False, 'error': str(e)}
@@ -312,14 +321,15 @@ class InventoryService:
             item = BusinessInventory.query.filter_by(sku=sku).first()
             if not item:
                 return {'success': False, 'error': 'Item not found'}
-            
-            # Remove validation that was preventing deletion
-            # Simply delete the item from database
             db.session.delete(item)
             db.session.commit()
-            
+            # Post-delete check
+            remaining = BusinessInventory.query.filter_by(sku=sku).first()
+            if remaining:
+                print(f"❌ Post-delete check: Item with SKU {sku} still exists after delete!")
+                return {'success': False, 'error': 'Failed to delete item from database'}
+            print(f"✅ Post-delete check: Item with SKU {sku} successfully deleted.")
             return {'success': True, 'message': 'Item deleted successfully'}
-            
         except Exception as e:
             db.session.rollback()
             print(f"❌ Error deleting item {sku}: {e}")
@@ -331,9 +341,7 @@ class InventoryService:
         try:
             query = BusinessInventory.query
             
-            # Apply filters
-            if filters.get('category'):
-                query = query.filter(BusinessInventory.category == filters['category'])
+            # Apply filters (category filter removed)
             
             if filters.get('brand'):
                 query = query.filter(BusinessInventory.brand.ilike(f"%{filters['brand']}%"))
@@ -347,13 +355,17 @@ class InventoryService:
             if filters.get('size'):
                 query = query.filter(BusinessInventory.size == filters['size'])
             
+            if filters.get('drop'):
+                query = query.filter(BusinessInventory.drop_field == filters['drop'])
+            
             if filters.get('search_term'):
                 search_term = f"%{filters['search_term']}%"
                 query = query.filter(
                     db.or_(
                         BusinessInventory.name.ilike(search_term),
                         BusinessInventory.description.ilike(search_term),
-                        BusinessInventory.sku.ilike(search_term)
+                        BusinessInventory.sku.ilike(search_term),
+                        BusinessInventory.drop_field.ilike(search_term)
                     )
                 )
             
@@ -477,43 +489,42 @@ class InventoryService:
 
     @staticmethod
     def can_edit_item(item):
-        """Check if item can be edited (business rule: only recent items)"""
-        try:
-            if not hasattr(item, 'created_at') or not item.created_at:
-                # If no creation date, allow editing for safety
-                return True
-            
-            # Allow editing for items created within the last 30 days
-            days_since_creation = (datetime.now() - item.created_at).days
-            return days_since_creation <= 30
-            
-        except Exception as e:
-            print(f"❌ Error checking edit permissions: {e}")
-            return True  # Allow editing if check fails
+        """Check if item can be edited (business rule: always allow for now)"""
+        # Temporarily always allow editing until we implement proper date tracking
+        return True
 
     @staticmethod
     def generate_sku():
-        """Generate a unique SKU for inventory items"""
-        try:
-            # Get the highest existing SKU number
-            all_items = BusinessInventory.query.all()
-            max_sku = 0
-            
-            for item in all_items:
-                if item.sku and item.sku.isdigit():
-                    sku_num = int(item.sku)
-                    if sku_num > max_sku:
-                        max_sku = sku_num
-            
-            # Return next number in sequence
-            new_sku = str(max_sku + 1)
-            print(f"📦 Generated new SKU: {new_sku}")
-            return new_sku
-            
-        except Exception as e:
-            print(f"❌ Error generating SKU: {e}")
-            # Fallback to random SKU if sequence fails
-            return str(random.randint(1000, 9999))
+        """Generate a unique SKU for inventory items with race condition protection"""
+        import time
+        max_retries = 5
+        
+        for attempt in range(max_retries):
+            try:
+                # Use timestamp + random suffix to avoid race conditions
+                timestamp = int(time.time() * 1000)  # milliseconds since epoch
+                random_suffix = random.randint(10, 99)
+                candidate_sku = f"{timestamp}{random_suffix}"
+                
+                # Check if this SKU already exists
+                existing_item = BusinessInventory.query.filter_by(sku=candidate_sku).first()
+                if not existing_item:
+                    logger.info(f"Generated unique SKU: {candidate_sku}")
+                    return candidate_sku
+                
+                # If SKU exists, wait a bit and try again
+                time.sleep(0.001)  # 1ms delay
+                
+            except Exception as e:
+                logger.error(f"Error generating SKU (attempt {attempt + 1}): {e}")
+                if attempt == max_retries - 1:
+                    # Final fallback - use UUID
+                    import uuid
+                    fallback_sku = str(uuid.uuid4().int)[:10]  # Use first 10 digits of UUID
+                    logger.warning(f"Using UUID-based fallback SKU: {fallback_sku}")
+                    return fallback_sku
+                
+        return str(random.randint(100000, 999999))  # Final emergency fallback
 
     @staticmethod
     def get_inventory_by_sku(sku):

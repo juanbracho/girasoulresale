@@ -12,11 +12,13 @@ class InventoryFilters {
             status: '',
             category: '',
             condition: '',
-            brand: ''
+            brand: '',
+            drop: ''
         };
         this.categories = [];
         this.conditions = [];
         this.brands = [];
+        this.drops = [];
         this.useFormBasedFiltering = true; // Default to form-based filtering
         
         this.init();
@@ -66,7 +68,8 @@ class InventoryFilters {
             status: urlParams.get('status') || '',
             category: urlParams.get('category') || '',
             condition: urlParams.get('condition') || '',
-            brand: urlParams.get('brand') || ''
+            brand: urlParams.get('brand') || '',
+            drop: urlParams.get('drop') || ''
         };
         
         console.log('📦 Loaded filters from URL:', this.currentFilters);
@@ -86,6 +89,7 @@ class InventoryFilters {
                     this.categories = data.categories || [];
                     this.conditions = data.conditions || [];
                     this.brands = data.brands || [];
+                    this.drops = data.drops || [];
                     console.log('✅ Loaded filter data from API');
                     return;
                 }
@@ -104,13 +108,7 @@ class InventoryFilters {
      * Extract filter data from existing DOM elements
      */
     extractFilterDataFromDOM() {
-        // Extract categories from select options
-        const categorySelect = document.getElementById('categoryFilter');
-        if (categorySelect) {
-            this.categories = Array.from(categorySelect.options)
-                .map(option => option.value)
-                .filter(value => value !== '');
-        }
+        // Category filter removed from system
 
         // Extract conditions from select options
         const conditionSelect = document.getElementById('conditionFilter');
@@ -124,6 +122,14 @@ class InventoryFilters {
         const brandSelect = document.getElementById('brandFilter');
         if (brandSelect) {
             this.brands = Array.from(brandSelect.options)
+                .map(option => option.value)
+                .filter(value => value !== '');
+        }
+
+        // Extract drops from select options
+        const dropSelect = document.getElementById('dropFilter');
+        if (dropSelect) {
+            this.drops = Array.from(dropSelect.options)
                 .map(option => option.value)
                 .filter(value => value !== '');
         }
@@ -145,34 +151,12 @@ class InventoryFilters {
         if (this.brands.length > 0) {
             this.populateBrandFilter();
         }
+        if (this.drops.length > 0) {
+            this.populateDropFilter();
+        }
     }
 
-    /**
-     * Populate category filter dropdown
-     */
-    populateCategoryFilter() {
-        const categoryFilter = document.getElementById('categoryFilter');
-        if (!categoryFilter) return;
-
-        // Check if already populated
-        if (categoryFilter.options.length > 1) return;
-
-        // Clear existing options except "All Categories"
-        categoryFilter.innerHTML = '<option value="">All Categories</option>';
-        
-        // Add category options
-        this.categories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category;
-            option.textContent = category;
-            if (category === this.currentFilters.category) {
-                option.selected = true;
-            }
-            categoryFilter.appendChild(option);
-        });
-        
-        console.log(`✅ Category filter populated with ${this.categories.length} categories`);
-    }
+    // Category filter removed from system
 
     /**
      * Populate condition filter dropdown
@@ -229,6 +213,33 @@ class InventoryFilters {
     }
 
     /**
+     * Populate drop filter dropdown
+     */
+    populateDropFilter() {
+        const dropFilter = document.getElementById('dropFilter');
+        if (!dropFilter) return;
+
+        // Check if already populated
+        if (dropFilter.options.length > 1) return;
+
+        // Clear existing options except "All Collections"
+        dropFilter.innerHTML = '<option value="">All Collections</option>';
+        
+        // Add drop options
+        this.drops.forEach(drop => {
+            const option = document.createElement('option');
+            option.value = drop;
+            option.textContent = drop;
+            if (drop === this.currentFilters.drop) {
+                option.selected = true;
+            }
+            dropFilter.appendChild(option);
+        });
+        
+        console.log(`✅ Drop filter populated with ${this.drops.length} drops`);
+    }
+
+    /**
      * Setup event listeners for filters
      */
     setupEventListeners() {
@@ -252,7 +263,8 @@ class InventoryFilters {
             { id: 'statusFilter', key: 'status' },
             { id: 'categoryFilter', key: 'category' },
             { id: 'conditionFilter', key: 'condition' },
-            { id: 'brandFilter', key: 'brand' }
+            { id: 'brandFilter', key: 'brand' },
+            { id: 'dropFilter', key: 'drop' }
         ];
 
         filterElements.forEach(({ id, key }) => {
@@ -384,14 +396,15 @@ class InventoryFilters {
             status: '',
             category: '',
             condition: '',
-            brand: ''
+            brand: '',
+            drop: ''
         };
 
         // Reset form elements
         const searchInput = document.getElementById('searchInput');
         if (searchInput) searchInput.value = '';
 
-        const filterSelects = ['statusFilter', 'categoryFilter', 'conditionFilter', 'brandFilter'];
+        const filterSelects = ['statusFilter', 'categoryFilter', 'conditionFilter', 'brandFilter', 'dropFilter'];
         filterSelects.forEach(id => {
             const select = document.getElementById(id);
             if (select) select.value = '';
@@ -450,14 +463,15 @@ class InventoryFilters {
         if (this.currentFilters.status) {
             activeFilters.push(`Status: ${this.currentFilters.status}`);
         }
-        if (this.currentFilters.category) {
-            activeFilters.push(`Category: ${this.currentFilters.category}`);
-        }
+        // Category filter removed
         if (this.currentFilters.condition) {
             activeFilters.push(`Condition: ${this.currentFilters.condition}`);
         }
         if (this.currentFilters.brand) {
             activeFilters.push(`Brand: ${this.currentFilters.brand}`);
+        }
+        if (this.currentFilters.drop) {
+            activeFilters.push(`Collection: ${this.currentFilters.drop}`);
         }
         
         return activeFilters;

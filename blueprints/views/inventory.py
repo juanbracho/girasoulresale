@@ -14,12 +14,12 @@ def inventory():
     try:
         # Get filter parameters from URL
         status_filter = request.args.get('status', '')
-        category_filter = request.args.get('category', '')
         condition_filter = request.args.get('condition', '')
         brand_filter = request.args.get('brand', '')
+        drop_filter = request.args.get('drop', '')
         search_query = request.args.get('search', '')
         
-        print(f"📦 Applied filters - Status: {status_filter}, Category: {category_filter}, Condition: {condition_filter}, Brand: {brand_filter}, Search: {search_query}")
+        print(f"📦 Applied filters - Status: {status_filter}, Condition: {condition_filter}, Brand: {brand_filter}, Drop: {drop_filter}, Search: {search_query}")
         
         # Build filtered query - NOTE: No is_active field exists, remove filter_by
         query = BusinessInventory.query
@@ -28,14 +28,14 @@ def inventory():
         if status_filter:
             query = query.filter(BusinessInventory.listing_status == status_filter)
             
-        if category_filter:
-            query = query.filter(BusinessInventory.category == category_filter)
-            
         if condition_filter:
             query = query.filter(BusinessInventory.condition == condition_filter)
             
         if brand_filter:
             query = query.filter(BusinessInventory.brand == brand_filter)
+            
+        if drop_filter:
+            query = query.filter(BusinessInventory.drop_field == drop_filter)
             
         if search_query:
             search_pattern = f"%{search_query}%"
@@ -43,7 +43,8 @@ def inventory():
                 (BusinessInventory.name.ilike(search_pattern)) |
                 (BusinessInventory.description.ilike(search_pattern)) |
                 (BusinessInventory.sku.ilike(search_pattern)) |
-                (BusinessInventory.brand.ilike(search_pattern))
+                (BusinessInventory.brand.ilike(search_pattern)) |
+                (BusinessInventory.drop_field.ilike(search_pattern))
             )
         
         # Get filtered inventory items (order by date_added if it exists, otherwise by id)
@@ -60,7 +61,7 @@ def inventory():
         filter_options = get_filter_options()
         
         # Determine if filters are active
-        filters_active = any([status_filter, category_filter, condition_filter, brand_filter, search_query])
+        filters_active = any([status_filter, condition_filter, brand_filter, drop_filter, search_query])
         
         print(f"📦 Loaded {len(inventory_items)} inventory items")
         
@@ -70,9 +71,9 @@ def inventory():
                              filter_options=filter_options,
                              current_filters={
                                  'status': status_filter,
-                                 'category': category_filter,
                                  'condition': condition_filter,
                                  'brand': brand_filter,
+                                 'drop': drop_filter,
                                  'search': search_query
                              },
                              filters_active=filters_active)
@@ -94,16 +95,16 @@ def inventory():
                                  'potential_profit': 0.0
                              },
                              filter_options={
-                                 'categories': [],
                                  'conditions': [],
                                  'brands': [],
+                                 'drops': [],
                                  'statuses': ['kept', 'inventory', 'listed', 'sold']
                              },
                              current_filters={
                                  'status': '',
-                                 'category': '',
                                  'condition': '',
                                  'brand': '',
+                                 'drop': '',
                                  'search': ''
                              },
                              filters_active=False,
@@ -164,13 +165,6 @@ def calculate_inventory_summary(inventory_items):
 def get_filter_options():
     """Get available options for filter dropdowns"""
     try:
-        # Get unique categories from all inventory (no is_active filter)
-        categories = db.session.query(BusinessInventory.category)\
-            .distinct()\
-            .order_by(BusinessInventory.category)\
-            .all()
-        categories = [cat[0] for cat in categories if cat[0]]
-        
         # Get unique conditions from all inventory
         conditions = db.session.query(BusinessInventory.condition)\
             .distinct()\
@@ -185,23 +179,30 @@ def get_filter_options():
             .all()
         brands = [brand[0] for brand in brands if brand[0]]
         
+        # Get unique drops/collections from all inventory
+        drops = db.session.query(BusinessInventory.drop_field)\
+            .distinct()\
+            .order_by(BusinessInventory.drop_field)\
+            .all()
+        drops = [drop[0] for drop in drops if drop[0]]
+        
         # Static status options based on your business model
         statuses = ['kept', 'inventory', 'listed', 'sold']
         
-        print(f"📦 Filter options: {len(categories)} categories, {len(conditions)} conditions, {len(brands)} brands")
+        print(f"📦 Filter options: {len(conditions)} conditions, {len(brands)} brands, {len(drops)} drops")
         
         return {
-            'categories': categories,
             'conditions': conditions,
             'brands': brands,
+            'drops': drops,
             'statuses': statuses
         }
         
     except Exception as e:
         print(f"❌ Error getting filter options: {e}")
         return {
-            'categories': [],
             'conditions': [],
             'brands': [],
+            'drops': [],
             'statuses': ['kept', 'inventory', 'listed', 'sold']
         }

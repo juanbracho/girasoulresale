@@ -88,7 +88,7 @@ class BusinessInventory(db.Model):
     __tablename__ = 'business_inventory'
     
     id = db.Column(db.Integer, primary_key=True)
-    sku = db.Column(db.String(50), unique=True, nullable=False, index=True)  # Will be numerical starting at 1
+    sku = db.Column(db.String(50), unique=True, nullable=False, index=True)  # Timestamp-based unique identifier
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     category = db.Column(db.String(50), nullable=False, index=True)
@@ -103,6 +103,7 @@ class BusinessInventory(db.Model):
     listing_status = db.Column(db.String(20), default='inventory', index=True)  # inventory, listed, sold, kept
     
     # Dates
+    # date_added = db.Column(db.Date, default=date.today, nullable=True, index=True)  # Temporarily disabled for compatibility
     sold_date = db.Column(db.Date)  # TEMPORARY: for migration only
     
     # Additional details
@@ -146,6 +147,7 @@ class BusinessInventory(db.Model):
             'sold_price': float(self.sold_price) if self.sold_price else None,
             'w_tax_price': float(self.w_tax_price) if self.w_tax_price else None,
             'listing_status': self.listing_status,
+            'date_added': None,  # Temporarily disabled for compatibility
             'sold_date': self.sold_date.isoformat() if self.sold_date else None,
             'location': self.location,
             'size': self.size,

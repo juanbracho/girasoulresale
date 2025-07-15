@@ -113,18 +113,6 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="categoryFilter" class="form-label">Category</label>
-                        <select class="form-select" id="categoryFilter" name="category">
-                            <option value="">All Categories</option>
-                            {% for category in filter_options.categories %}
-                            <option value="{{ category }}" 
-                                    {{ 'selected' if current_filters and current_filters.category == category else '' }}>
-                                {{ category }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-2">
                         <label for="conditionFilter" class="form-label">Condition</label>
                         <select class="form-select" id="conditionFilter" name="condition">
                             <option value="">All Conditions</option>
@@ -144,6 +132,18 @@
                             <option value="{{ brand }}" 
                                     {{ 'selected' if current_filters and current_filters.brand == brand else '' }}>
                                 {{ brand }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="dropFilter" class="form-label">Collection/Drop</label>
+                        <select class="form-select" id="dropFilter" name="drop">
+                            <option value="">All Collections</option>
+                            {% for drop in filter_options.drops %}
+                            <option value="{{ drop }}" 
+                                    {{ 'selected' if current_filters and current_filters.drop == drop else '' }}>
+                                {{ drop }}
                             </option>
                             {% endfor %}
                         </select>
@@ -180,13 +180,6 @@
                                     onclick="removeFilter('status')" style="font-size: 0.6rem;"></button>
                         </span>
                         {% endif %}
-                        {% if current_filters.category %}
-                        <span class="badge bg-success">
-                            Category: {{ current_filters.category }}
-                            <button type="button" class="btn-close btn-close-white ms-1" 
-                                    onclick="removeFilter('category')" style="font-size: 0.6rem;"></button>
-                        </span>
-                        {% endif %}
                         {% if current_filters.condition %}
                         <span class="badge bg-warning">
                             Condition: {{ current_filters.condition }}
@@ -199,6 +192,13 @@
                             Brand: {{ current_filters.brand }}
                             <button type="button" class="btn-close btn-close-white ms-1" 
                                     onclick="removeFilter('brand')" style="font-size: 0.6rem;"></button>
+                        </span>
+                        {% endif %}
+                        {% if current_filters.drop %}
+                        <span class="badge bg-info">
+                            Collection: {{ current_filters.drop }}
+                            <button type="button" class="btn-close btn-close-white ms-1" 
+                                    onclick="removeFilter('drop')" style="font-size: 0.6rem;"></button>
                         </span>
                         {% endif %}
                         <button type="button" class="btn btn-outline-danger btn-sm" 
@@ -509,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('📦 Initializing inventory filters...');
     
     // Auto-submit form when filters change
-    const filterSelects = document.querySelectorAll('#statusFilter, #categoryFilter, #conditionFilter, #brandFilter');
+    const filterSelects = document.querySelectorAll('#statusFilter, #conditionFilter, #brandFilter, #dropFilter');
     filterSelects.forEach(select => {
         select.addEventListener('change', function() {
             document.getElementById('inventoryFilterForm').submit();

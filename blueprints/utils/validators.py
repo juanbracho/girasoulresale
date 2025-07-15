@@ -181,7 +181,7 @@ def validate_transaction_data(data):
 def validate_inventory_data(data):
     """Validate inventory item data - CORRECTED for actual database schema"""
     # Required fields validation - using CORRECT field names that match database
-    required_fields = ['name', 'category', 'cost_of_item', 'selling_price', 'brand', 'size', 'condition', 'location', 'description']
+    required_fields = ['name', 'category', 'cost_of_item', 'selling_price', 'brand', 'size', 'condition']
     validation = validate_required_fields(data, required_fields)
     if not validation['valid']:
         return validation
@@ -236,15 +236,17 @@ def validate_inventory_data(data):
     if not validation['valid']:
         return validation
     
-    # Validate location (required now)
-    validation = validate_string_length(data['location'], 'Location', min_length=1, max_length=100)
-    if not validation['valid']:
-        return validation
+    # Validate location (optional now)
+    if data.get('location'):
+        validation = validate_string_length(data['location'], 'Location', min_length=1, max_length=100)
+        if not validation['valid']:
+            return validation
     
-    # Validate description (required now)
-    validation = validate_string_length(data['description'], 'Description', min_length=3, max_length=500)
-    if not validation['valid']:
-        return validation
+    # Validate description (optional now)
+    if data.get('description'):
+        validation = validate_string_length(data['description'], 'Description', min_length=3, max_length=500)
+        if not validation['valid']:
+            return validation
     
     return {'valid': True}
 

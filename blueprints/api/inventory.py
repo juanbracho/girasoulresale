@@ -22,33 +22,45 @@ def get_all_inventory():
         
         from models import BusinessInventory
         
-        # Get all inventory items (no is_active filter)
+        # Get all inventory items - use simple ordering that always works
         try:
-            items = BusinessInventory.query.order_by(BusinessInventory.date_added.desc()).all()
-        except AttributeError:
-            # Fallback if date_added doesn't exist
             items = BusinessInventory.query.order_by(BusinessInventory.id.desc()).all()
+        except Exception as fallback_error:
+            print(f"❌ API: Query failed: {fallback_error}")
+            try:
+                items = BusinessInventory.query.all()
+            except Exception as final_error:
+                print(f"❌ API: Even basic query failed: {final_error}")
+                items = []
         
         # Convert to dict format
         items_data = []
         for item in items:
             try:
                 items_data.append(item.to_dict())
-            except AttributeError:
-                # Fallback if to_dict doesn't exist
-                items_data.append({
-                    'id': item.id,
-                    'sku': item.sku,
-                    'name': item.name,
-                    'description': item.description,
-                    'category': item.category,
-                    'brand': getattr(item, 'brand', ''),
-                    'condition': getattr(item, 'condition', ''),
-                    'cost_of_item': float(item.cost_of_item or 0),
-                    'selling_price': float(item.selling_price or 0),
-                    'listing_status': item.listing_status,
-                    'date_added': getattr(item, 'date_added', None)
-                })
+            except Exception as e:
+                print(f"❌ API: Error converting item {getattr(item, 'id', 'unknown')} to dict: {e}")
+                # Robust fallback if to_dict fails
+                try:
+                    items_data.append({
+                        'id': getattr(item, 'id', None),
+                        'sku': getattr(item, 'sku', ''),
+                        'name': getattr(item, 'name', ''),
+                        'description': getattr(item, 'description', ''),
+                        'category': getattr(item, 'category', ''),
+                        'brand': getattr(item, 'brand', ''),
+                        'condition': getattr(item, 'condition', ''),
+                        'cost_of_item': float(getattr(item, 'cost_of_item', 0) or 0),
+                        'selling_price': float(getattr(item, 'selling_price', 0) or 0),
+                        'listing_status': getattr(item, 'listing_status', 'inventory'),
+                        'date_added': getattr(item, 'date_added', None),
+                        'location': getattr(item, 'location', ''),
+                        'size': getattr(item, 'size', ''),
+                        'drop_field': getattr(item, 'drop_field', '')
+                    })
+                except Exception as inner_e:
+                    print(f"❌ API: Even robust fallback failed for item: {inner_e}")
+                    continue
         
         print(f"📦 API: Retrieved {len(items_data)} inventory items")
         
@@ -109,14 +121,14 @@ def search_inventory():
         if data.get('status'):
             query = query.filter(BusinessInventory.listing_status == data['status'])
             
-        if data.get('category'):
-            query = query.filter(BusinessInventory.category == data['category'])
-            
         if data.get('condition'):
             query = query.filter(BusinessInventory.condition == data['condition'])
             
         if data.get('brand'):
             query = query.filter(BusinessInventory.brand == data['brand'])
+            
+        if data.get('drop'):
+            query = query.filter(BusinessInventory.drop_field == data['drop'])
             
         if data.get('search'):
             search_pattern = f"%{data['search']}%"
@@ -124,15 +136,16 @@ def search_inventory():
                 (BusinessInventory.name.ilike(search_pattern)) |
                 (BusinessInventory.description.ilike(search_pattern)) |
                 (BusinessInventory.sku.ilike(search_pattern)) |
-                (BusinessInventory.brand.ilike(search_pattern))
+                (BusinessInventory.brand.ilike(search_pattern)) |
+                (BusinessInventory.drop_field.ilike(search_pattern))
             )
         
-        # Execute query and convert to dict
+        # Execute query and convert to dict - use simple ordering
         try:
-            items = query.order_by(BusinessInventory.date_added.desc()).all()
-        except AttributeError:
-            # Fallback if date_added doesn't exist
             items = query.order_by(BusinessInventory.id.desc()).all()
+        except Exception as e:
+            print(f"❌ API: Search query failed: {e}")
+            items = []
         
         # Convert to dict format
         items_data = []
@@ -443,18 +456,11 @@ def check_edit_permissions(sku):
 
 @inventory_api_bp.route('/categories-and-conditions', methods=['GET'])
 def get_categories_and_conditions():
-    """Get categories and conditions for filter dropdowns"""
+    """Get conditions for filter dropdowns (categories removed)"""
     try:
-        print("📦 API: Getting categories and conditions for filters...")
+        print("📦 API: Getting conditions for filters...")
         
         from models import BusinessInventory, db
-        
-        # Get unique categories from all inventory (no is_active filter)
-        categories = db.session.query(BusinessInventory.category)\
-            .distinct()\
-            .order_by(BusinessInventory.category)\
-            .all()
-        categories_list = [{'name': cat[0]} for cat in categories if cat[0]]
         
         # Get unique conditions from all inventory
         conditions = db.session.query(BusinessInventory.condition)\
@@ -465,12 +471,11 @@ def get_categories_and_conditions():
         
         return jsonify({
             'success': True,
-            'categories': categories_list,
             'conditions': conditions_list
         })
         
     except Exception as e:
-        print(f"❌ API Error getting categories and conditions: {e}")
+        print(f"❌ API Error getting conditions: {e}")
         return jsonify({
             'success': False,
             'error': 'Failed to get filter data'
@@ -484,12 +489,7 @@ def get_filter_options():
         
         from models import BusinessInventory, db
         
-        # Get unique categories (no is_active filter)
-        categories = db.session.query(BusinessInventory.category)\
-            .distinct()\
-            .order_by(BusinessInventory.category)\
-            .all()
-        categories_list = [cat[0] for cat in categories if cat[0]]
+        # Categories removed from filtering system
         
         # Get unique conditions
         conditions = db.session.query(BusinessInventory.condition)\
@@ -505,14 +505,21 @@ def get_filter_options():
             .all()
         brands_list = [brand[0] for brand in brands if brand[0]]
         
+        # Get unique drops/collections
+        drops = db.session.query(BusinessInventory.drop_field)\
+            .distinct()\
+            .order_by(BusinessInventory.drop_field)\
+            .all()
+        drops_list = [drop[0] for drop in drops if drop[0]]
+        
         # Static status options
         statuses = ['kept', 'inventory', 'listed', 'sold']
         
         return jsonify({
             'success': True,
-            'categories': categories_list,
             'conditions': conditions_list,
             'brands': brands_list,
+            'drops': drops_list,
             'statuses': statuses
         })
         
@@ -587,15 +594,12 @@ def export_inventory():
         
         # Get query parameters for filtering
         status = request.args.get('status')
-        category = request.args.get('category')
         format_type = request.args.get('format', 'json')
         
         # Build filters
         filters = {}
         if status:
             filters['status'] = status
-        if category:
-            filters['category'] = category
         
         # Get filtered items
         if filters:
@@ -684,7 +688,7 @@ def get_category_breakdown():
             func.sum(BusinessInventory.cost_of_item).label('total_cost'),
             func.sum(BusinessInventory.selling_price).label('total_value')
         ).filter(
-            BusinessInventory.is_active == True
+            BusinessInventory.listing_status != 'sold'
         ).group_by(BusinessInventory.category).all()
         
         breakdown = []
@@ -730,7 +734,7 @@ def get_status_breakdown():
             func.sum(BusinessInventory.cost_of_item).label('total_cost'),
             func.sum(BusinessInventory.selling_price).label('total_value')
         ).filter(
-            BusinessInventory.is_active == True
+            BusinessInventory.listing_status != 'sold'
         ).group_by(BusinessInventory.listing_status).all()
         
         breakdown = []

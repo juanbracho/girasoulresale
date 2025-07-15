@@ -58,6 +58,12 @@
                             🏢 Assets
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.endpoint == 'insights.ai_insights' }}" 
+                           href="{{ url_for('insights.ai_insights') }}">
+                            🧠 AI Insights
+                        </a>
+                    </li>
                 </ul>
                 
                 <ul class="navbar-nav">

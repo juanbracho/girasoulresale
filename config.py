@@ -1,4 +1,5 @@
 import os
+import logging
 from pathlib import Path
 
 class Config:
@@ -44,6 +45,10 @@ class Config:
     BACKUP_ENABLED = os.environ.get('BACKUP_ENABLED', 'False').lower() == 'true'
     BACKUP_INTERVAL_HOURS = int(os.environ.get('BACKUP_INTERVAL_HOURS', '24'))
     
+    # Logging Settings
+    LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
+    LOG_FILE = os.environ.get('LOG_FILE', 'girasoul.log')
+    
     @staticmethod
     def init_app(app):
         """Initialize app with configuration"""
@@ -54,6 +59,16 @@ class Config:
         # Ensure upload directory exists if file uploads are used
         if Config.UPLOAD_FOLDER:
             Config.UPLOAD_FOLDER.mkdir(exist_ok=True)
+        
+        # Setup logging
+        logging.basicConfig(
+            level=getattr(logging, Config.LOG_LEVEL.upper(), logging.INFO),
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler(Config.DATA_DIR / Config.LOG_FILE),
+                logging.StreamHandler()
+            ]
+        )
 
 class DevelopmentConfig(Config):
     """Development configuration"""
