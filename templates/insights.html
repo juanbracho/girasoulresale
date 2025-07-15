@@ -1,0 +1,579 @@
+{% extends "base.html" %}
+
+{% block title %}AI Business Insights{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/insights.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid insights-dashboard">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h3 mb-1">
+                <i class="fas fa-brain text-primary me-2"></i>
+                AI Business Insights
+            </h2>
+            <p class="text-muted mb-0">Intelligent analysis and recommendations for your fashion business</p>
+        </div>
+        <div>
+            <button type="button" class="btn btn-outline-primary me-2" onclick="refreshInsights()">
+                <i class="fas fa-sync-alt me-1"></i>Refresh Data
+            </button>
+            <small class="text-muted">Last updated: {{ summary_stats.generated_at }}</small>
+        </div>
+    </div>
+
+    <!-- Business Health Score Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card health-score-card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="health-score-display">
+                                <div class="score-circle">
+                                    <span class="score-value">{{ dashboard_data.health_score.overall_score or 0 }}</span>
+                                    <small>Health Score</small>
+                                </div>
+                                <div class="score-status {{ dashboard_data.health_score.status|lower }}">
+                                    {{ dashboard_data.health_score.status or 'Unknown' }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="score-breakdown">
+                                <h6>Score Breakdown</h6>
+                                <div class="score-component">
+                                    <span>Revenue Trend</span>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: {{ dashboard_data.health_score.revenue_score or 0 }}%"></div>
+                                    </div>
+                                    <small>{{ dashboard_data.health_score.revenue_score or 0 }}/100</small>
+                                </div>
+                                <div class="score-component">
+                                    <span>Inventory Efficiency</span>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-info" style="width: {{ dashboard_data.health_score.inventory_score or 0 }}%"></div>
+                                    </div>
+                                    <small>{{ dashboard_data.health_score.inventory_score or 0 }}/100</small>
+                                </div>
+                                <div class="score-component">
+                                    <span>Profit Margin</span>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-warning" style="width: {{ dashboard_data.health_score.profit_score or 0 }}%"></div>
+                                    </div>
+                                    <small>{{ dashboard_data.health_score.profit_score or 0 }}/100</small>
+                                </div>
+                                <div class="score-component">
+                                    <span>Sales Velocity</span>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-primary" style="width: {{ dashboard_data.health_score.velocity_score or 0 }}%"></div>
+                                    </div>
+                                    <small>{{ dashboard_data.health_score.velocity_score or 0 }}/100</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="key-metrics">
+                                <h6>Key Metrics</h6>
+                                <div class="metric-item">
+                                    <span class="metric-label">Monthly Revenue</span>
+                                    <span class="metric-value">${{ "%.2f"|format(dashboard_data.key_metrics.monthly_revenue or 0) }}</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Active Listings</span>
+                                    <span class="metric-value">{{ dashboard_data.key_metrics.active_listings or 0 }}</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Inventory Value</span>
+                                    <span class="metric-value">${{ "%.2f"|format(dashboard_data.key_metrics.inventory_value or 0) }}</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Items Sold (Month)</span>
+                                    <span class="metric-value">{{ dashboard_data.key_metrics.items_sold_month or 0 }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Insights Alert Cards -->
+    {% if dashboard_data.quick_insights %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5 class="mb-3"><i class="fas fa-lightbulb text-warning me-2"></i>Quick Insights</h5>
+            <div class="row">
+                {% for insight in dashboard_data.quick_insights[:3] %}
+                <div class="col-md-4 mb-3">
+                    <div class="alert alert-{{ 'danger' if insight.type == 'alert' else ('warning' if insight.type == 'warning' else 'success') }} insight-card">
+                        <h6 class="alert-heading">{{ insight.title }}</h6>
+                        <p class="mb-2">{{ insight.message }}</p>
+                        <button class="btn btn-sm btn-outline-{{ 'danger' if insight.type == 'alert' else ('warning' if insight.type == 'warning' else 'success') }}" 
+                                onclick="handleInsightAction('{{ insight.action }}')">
+                            Take Action
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Insights Grid -->
+    <div class="row">
+        <!-- Inventory Intelligence -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-boxes text-info me-2"></i>
+                        Inventory Intelligence
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Inventory Distribution Chart -->
+                    <div class="chart-container mb-4">
+                        <canvas id="inventoryDistributionChart"></canvas>
+                    </div>
+                    
+                    <!-- Slow Moving Items -->
+                    <h6>Slow Moving Items (Top 5)</h6>
+                    <div class="slow-moving-items">
+                        {% for item in dashboard_data.slow_moving_items[:5] %}
+                        <div class="slow-item">
+                            <div class="item-info">
+                                <strong>{{ item.name }}</strong>
+                                <small class="text-muted">SKU: {{ item.sku }}</small>
+                            </div>
+                            <div class="item-action">
+                                <span class="badge bg-{{ 'danger' if item.suggested_action == 'liquidate' else ('warning' if item.suggested_action == 'reduce_price' else 'info') }}">
+                                    {{ item.recommendation }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Inventory Recommendations -->
+                    {% if dashboard_data.inventory_recommendations %}
+                    <div class="mt-3">
+                        <h6>Recommendations</h6>
+                        {% for rec in dashboard_data.inventory_recommendations %}
+                        <div class="alert alert-{{ 'danger' if rec.priority == 'high' else ('warning' if rec.priority == 'medium' else 'info') }} py-2">
+                            <strong>{{ rec.title }}</strong><br>
+                            <small>{{ rec.description }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Analytics -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line text-success me-2"></i>
+                        Sales Analytics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Category Performance Chart -->
+                    <div class="chart-container mb-4">
+                        <canvas id="categoryPerformanceChart"></canvas>
+                    </div>
+                    
+                    <!-- Top Performing Categories -->
+                    <h6>Category Performance</h6>
+                    <div class="category-performance">
+                        {% for category in dashboard_data.category_performance[:5] %}
+                        <div class="performance-item">
+                            <div class="category-info">
+                                <strong>{{ category.category }}</strong>
+                                <div class="performance-metrics">
+                                    <small>{{ category.items_sold }} sold | ${{ "%.2f"|format(category.total_revenue) }} revenue</small>
+                                </div>
+                            </div>
+                            <div class="performance-rating">
+                                <span class="badge bg-{{ 'success' if category.performance_rating == 'Excellent' else ('primary' if category.performance_rating == 'Good' else ('warning' if category.performance_rating == 'Fair' else 'secondary')) }}">
+                                    {{ category.performance_rating }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Sales Insights -->
+                    {% if dashboard_data.sales_insights %}
+                    <div class="mt-3">
+                        <h6>Sales Insights</h6>
+                        {% for insight in dashboard_data.sales_insights %}
+                        <div class="alert alert-info py-2">
+                            <small>{{ insight }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Profit Optimization -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-dollar-sign text-warning me-2"></i>
+                        Profit Optimization
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Pricing Recommendations -->
+                    <h6>AI Pricing Recommendations</h6>
+                    <div class="pricing-recommendations">
+                        {% for rec in dashboard_data.pricing_recommendations[:5] %}
+                        <div class="pricing-item">
+                            <div class="item-details">
+                                <strong>{{ rec.name }}</strong>
+                                <small class="text-muted d-block">{{ rec.brand }} - {{ rec.category }}</small>
+                            </div>
+                            <div class="pricing-suggestion">
+                                <div class="price-change">
+                                    <span class="current-price">${{ "%.2f"|format(rec.current_price) }}</span>
+                                    <i class="fas fa-arrow-right mx-1"></i>
+                                    <span class="suggested-price">${{ "%.2f"|format(rec.suggested_price) }}</span>
+                                </div>
+                                <small class="confidence">{{ rec.confidence }}% confidence</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Margin Analysis -->
+                    {% if dashboard_data.margin_analysis.by_category %}
+                    <div class="mt-4">
+                        <h6>Margin Analysis by Category</h6>
+                        <div class="margin-analysis">
+                            {% for category in dashboard_data.margin_analysis.by_category[:5] %}
+                            <div class="margin-item">
+                                <span class="category-name">{{ category.category }}</span>
+                                <div class="margin-bar">
+                                    <div class="progress">
+                                        <div class="progress-bar bg-{{ 'success' if category.avg_margin > 50 else ('warning' if category.avg_margin > 25 else 'danger') }}" 
+                                             style="width: {{ category.avg_margin }}%"></div>
+                                    </div>
+                                    <small>{{ "%.1f"|format(category.avg_margin) }}%</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Trend Analysis -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-area text-primary me-2"></i>
+                        Trend Analysis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Seasonal Trends Chart -->
+                    <div class="chart-container mb-4">
+                        <canvas id="seasonalTrendsChart"></canvas>
+                    </div>
+                    
+                    <!-- Top Brands -->
+                    <h6>Top Performing Brands</h6>
+                    <div class="brand-performance">
+                        {% for brand in dashboard_data.brand_trends[:5] %}
+                        <div class="brand-item">
+                            <div class="brand-info">
+                                <strong>{{ brand.brand }}</strong>
+                                <small class="text-muted">{{ brand.items_sold }} items sold</small>
+                            </div>
+                            <div class="brand-revenue">
+                                <span class="revenue-amount">${{ "%.0f"|format(brand.total_revenue) }}</span>
+                                <span class="badge bg-{{ 'success' if brand.performance_tier == 'Top Performer' else ('primary' if brand.performance_tier == 'Strong Performer' else 'secondary') }}">
+                                    {{ brand.performance_tier }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Trend Insights -->
+                    {% if dashboard_data.trend_insights %}
+                    <div class="mt-3">
+                        <h6>Trend Insights</h6>
+                        {% for insight in dashboard_data.trend_insights %}
+                        <div class="alert alert-primary py-2">
+                            <small>{{ insight }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Analytics Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-analytics text-info me-2"></i>
+                        Price Range Performance
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for price_range in dashboard_data.price_range_analysis %}
+                        <div class="col-md-4 col-lg-2 mb-3">
+                            <div class="price-range-card">
+                                <h6>{{ price_range.price_range }}</h6>
+                                <div class="price-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">{{ price_range.items_sold }}</span>
+                                        <small>Items Sold</small>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">${{ "%.0f"|format(price_range.total_revenue) }}</span>
+                                        <small>Revenue</small>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">{{ "%.1f"|format(price_range.avg_margin_percent) }}%</span>
+                                        <small>Avg Margin</small>
+                                    </div>
+                                </div>
+                                <div class="performance-badge">
+                                    <span class="badge bg-{{ 'success' if price_range.performance == 'Excellent' else ('primary' if price_range.performance == 'Good' else ('warning' if price_range.performance == 'Fair' else 'secondary')) }}">
+                                        {{ price_range.performance }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations Summary -->
+    {% if dashboard_data.health_score.recommendations %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                        AI Recommendations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="recommendations-grid">
+                        {% for recommendation in dashboard_data.health_score.recommendations %}
+                        <div class="recommendation-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            {{ recommendation }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Loading Overlay -->
+    <div id="insightsLoadingOverlay" class="d-none">
+        <div class="loading-content">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading insights...</span>
+            </div>
+            <p class="mt-3">Analyzing your business data...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Insights Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage">An error occurred while loading insights.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="refreshInsights()">Retry</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/insights.js') }}"></script>
+<script>
+// Initialize insights dashboard when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🧠 Initializing AI Insights dashboard...');
+    
+    // Initialize the insights system
+    if (window.InsightsManager) {
+        window.insightsManager = new InsightsManager();
+        window.insightsManager.init();
+    } else {
+        console.error('❌ InsightsManager not found. Check if insights.js loaded correctly.');
+    }
+    
+    // Initialize charts with data
+    initializeCharts();
+});
+
+// Global functions for template usage
+function refreshInsights() {
+    if (window.insightsManager) {
+        window.insightsManager.refreshAllInsights();
+    } else {
+        location.reload();
+    }
+}
+
+function handleInsightAction(action) {
+    if (window.insightsManager) {
+        window.insightsManager.handleInsightAction(action);
+    } else {
+        console.log('Insight action:', action);
+    }
+}
+
+// Initialize charts with backend data
+function initializeCharts() {
+    // Inventory Distribution Chart
+    const inventoryData = {{ dashboard_data.inventory_distribution.by_category | tojson }};
+    if (inventoryData && inventoryData.length > 0) {
+        createInventoryDistributionChart(inventoryData);
+    }
+    
+    // Category Performance Chart
+    const categoryData = {{ dashboard_data.category_performance | tojson }};
+    if (categoryData && categoryData.length > 0) {
+        createCategoryPerformanceChart(categoryData);
+    }
+    
+    // Seasonal Trends Chart
+    const seasonalData = {{ dashboard_data.seasonal_trends | tojson }};
+    if (seasonalData && seasonalData.length > 0) {
+        createSeasonalTrendsChart(seasonalData);
+    }
+}
+
+function createInventoryDistributionChart(data) {
+    const ctx = document.getElementById('inventoryDistributionChart');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: data.map(item => item.category),
+            datasets: [{
+                data: data.map(item => item.count),
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function createCategoryPerformanceChart(data) {
+    const ctx = document.getElementById('categoryPerformanceChart');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.map(item => item.category),
+            datasets: [{
+                label: 'Revenue',
+                data: data.map(item => item.total_revenue),
+                backgroundColor: '#36A2EB'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toFixed(0);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createSeasonalTrendsChart(data) {
+    const ctx = document.getElementById('seasonalTrendsChart');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.map(item => item.month),
+            datasets: [{
+                label: 'Sales Count',
+                data: data.map(item => item.sales_count),
+                borderColor: '#FF6384',
+                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}
